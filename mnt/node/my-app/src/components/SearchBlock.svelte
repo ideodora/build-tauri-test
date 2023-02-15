@@ -3,6 +3,9 @@
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { fly } from 'svelte/transition';
 	import { segments as storeSegments } from '~/components/mapStore';
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	type Candidate = {
 		river_name: string;
@@ -27,6 +30,11 @@
 		console.log(candidate);
 
 		const curveKey = { name: candidate.river_name, river_code: candidate.river_code };
+
+		dispatch('clickedSearchRiver', { curveKey });
+
+		return;
+
 		// 	const { pid, prefCode } = event.detail.feature.properties;
 		// 	const curveId = { pid, pref_code: prefCode };
 		const result = await invoke<any>('get_curves', { curveKey });
@@ -42,24 +50,6 @@
 			mapper.set(curve.id, segment);
 			storeSegments.set([...mapper.values()]);
 		});
-		// 	// this.http
-		// 	// 	.get<Curve[]>(
-		// 	// 		`http://localhost:3000/select?name=${candidate.riverName}&code=${candidate.riverCode}`
-		// 	// 	)
-		// 	// 	.subscribe((curves: Curve[]) => {
-		// 	// 		const lineSets = curves.map((curve) => {
-		// 	// 			const splits = curve.segments.split('\\r\\n');
-		// 	// 			const segments: [number, number][] = splits.map((split) => {
-		// 	// 				const parts = split.split(' ');
-		// 	// 				// return [parseFloat(parts[0]), parseFloat(parts[1])];
-		// 	// 				return [parseFloat(parts[1]), parseFloat(parts[0])];
-		// 	// 			});
-		// 	// 			// return segments;
-		// 	// 			const features = this.addSegment(curve.id, segments);
-		// 	// 			return features[0];
-		// 	// 		});
-		// 	// 		this.fitLinesBounds(lineSets);
-		// 	// 	});
 	};
 </script>
 

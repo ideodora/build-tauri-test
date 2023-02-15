@@ -40,6 +40,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@geoman-io/leaflet-geoman-free": "^2.14.1",
 		"@tauri-apps/api": "^1.2.0",
 		"@turf/turf": "^6.5.0",
 		"firebase": "^9.16.0",

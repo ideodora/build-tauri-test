@@ -8,11 +8,12 @@
 	import Repeat from 'svelte-google-materialdesign-icons/Repeat.svelte';
 	import Layers_clear from 'svelte-google-materialdesign-icons/Layers_clear.svelte';
 	import Content_cut from 'svelte-google-materialdesign-icons/Content_cut.svelte';
+	import Swap_vert from 'svelte-google-materialdesign-icons/Swap_vert.svelte';
 
 	import { getBounds, addStartingPoint, removeStartingPoints } from '~/components/Map.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 
-	import { sps, lassoEnabled, lassoContinue, asgstr, zsgstr } from '~/components/mapStore';
+	import { sps, lassoEnabled, lassoContinue, asgstr, drawingEnabled } from '~/components/mapStore';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
@@ -65,10 +66,25 @@
 		dispatch('createZoneEvent', {});
 		// zsgstr.set(100);
 	}
+
+	function removeSegment() {
+		dispatch('clickedRemoveSegment', {});
+	}
+
+	function swapStartEnd() {
+		dispatch('clickedSwapStartEnd', {});
+	}
 </script>
 
-<div class="pointer-events-auto col-span-2 flex items-start gap-x-2">
-	<button class="btn" type="button">
+<div class="pointer-events-auto col-span-2 flex w-max items-start gap-x-2">
+	<button
+		class="btn"
+		type="button"
+		class:!bg-red-200={$drawingEnabled}
+		on:click={() => {
+			$drawingEnabled = !$drawingEnabled;
+		}}
+	>
 		<Timeline tabindex="-1" class="outline-none" />
 	</button>
 	<div class="flex flex-col">
@@ -109,6 +125,9 @@
 		<button class="btn" type="button" on:click={addZone}>
 			<Select_all class="outline-none" tabindex="-1" />
 		</button>
+		<button class="btn" type="button" on:click={swapStartEnd}>
+			<Swap_vert tabindex="-1" />
+		</button>
 		<button class="btn" type="button" on:click={offSelect}>
 			<Content_cut class="outline-none" tabindex="-1" />
 		</button>
@@ -117,7 +136,7 @@
 		<button class="btn" type="button" on:click={offSelect}>
 			<Save_as class="outline-none" tabindex="-1" />
 		</button>
-		<button class="btn !bg-red-200" type="button" on:click={offSelect}>
+		<button class="btn !bg-red-200" type="button" on:click={removeSegment}>
 			<Layers_clear class="outline-none" tabindex="-1" />
 		</button>
 		<button class="btn" type="button" on:click={offSelect}>

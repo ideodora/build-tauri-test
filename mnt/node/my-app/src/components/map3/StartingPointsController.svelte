@@ -1,12 +1,9 @@
 <script lang="ts">
 	import { getContext, onDestroy } from 'svelte';
-	import { L, key, type MapContext } from '~/components/map3/leaflet';
+	import { L, key, iconDefault, type MapContext } from '~/components/map3/leaflet';
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { sps as startingPointRaws } from '~/components/mapStore';
 	import { point as turfPoint } from '@turf/helpers';
-	import iconRetinaUrl from '~/assets/marker-icon-2x.png';
-	import iconUrl from '~/assets/marker-icon.png';
-	import shadowUrl from '~/assets/marker-shadow.png';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
@@ -17,19 +14,6 @@
 
 	const controller = L.markerClusterGroup();
 	controller.addTo(map);
-
-	const iconDefault = () => {
-		return L.icon({
-			iconRetinaUrl,
-			iconUrl,
-			shadowUrl,
-			iconSize: [25, 41],
-			iconAnchor: [12, 41],
-			popupAnchor: [1, -34],
-			tooltipAnchor: [16, -28],
-			shadowSize: [41, 41]
-		});
-	};
 
 	export const load = async () => {
 		const bounds = map.getBounds();

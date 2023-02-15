@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, setContext } from 'svelte';
 	import { L, key, createMap } from '~/components/map3/leaflet';
+	import { drawingEnabled } from '~/components/mapStore';
 
 	let element: HTMLDivElement;
 	let map: L.Map;
@@ -19,3 +20,11 @@
 {#if map}
 	<slot />
 {/if}
+
+<style lang="postcss">
+	:global(.leaflet-overlay-pane) {
+		-webkit-user-select: none; /* Safari */
+		-ms-user-select: none; /* IE 10 and IE 11 */
+		user-select: none; /* Standard syntax */
+	}
+</style>
