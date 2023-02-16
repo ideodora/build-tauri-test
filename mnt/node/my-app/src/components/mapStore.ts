@@ -9,6 +9,7 @@ export const lassoContinue = writable<boolean>(false);
 export const segmentsStore = writable<Map<string, any>>(new Map([]));
 
 export const drawingEnabled = writable<boolean>(false);
+export const isComposingZone = writable<boolean>(false);
 
 function createSegmentStore() {
 	const { subscribe, set, update } = writable(new Map<string, any>([]));

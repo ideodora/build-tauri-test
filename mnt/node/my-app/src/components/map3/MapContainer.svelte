@@ -36,6 +36,10 @@
 	const onClickedSwapStartEnd = () => {
 		segmentsController.swapStartEndSelectingSegment();
 	};
+
+	const onCreateZoneEvent = () => {
+		segmentsController.buildZone();
+	};
 </script>
 
 <div class="relative h-full w-full">
@@ -49,6 +53,7 @@
 				on:clickedOffPin={onClickedOffPin}
 				on:clickedRemoveSegment={onClickedRemoveSegment}
 				on:clickedSwapStartEnd={onClickedSwapStartEnd}
+				on:createZoneEvent={onCreateZoneEvent}
 			/>
 		</div>
 	</div>

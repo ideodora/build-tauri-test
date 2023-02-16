@@ -12,6 +12,10 @@
 
 	onMount(() => {
 		map = createMap(element);
+
+		// for zone layer zindex
+		map.createPane('tempZone').style.zIndex = '250';
+		map.createPane('zone').style.zIndex = '350';
 	});
 </script>
 

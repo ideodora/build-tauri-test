@@ -13,7 +13,14 @@
 	import { getBounds, addStartingPoint, removeStartingPoints } from '~/components/Map.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
 
-	import { sps, lassoEnabled, lassoContinue, asgstr, drawingEnabled } from '~/components/mapStore';
+	import {
+		sps,
+		lassoEnabled,
+		lassoContinue,
+		asgstr,
+		drawingEnabled,
+		isComposingZone
+	} from '~/components/mapStore';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
@@ -122,7 +129,7 @@
 		{/if}
 	</div>
 	{#if $asgstr.size === 1}
-		<button class="btn" type="button" on:click={addZone}>
+		<button class="btn" type="button" on:click={addZone} class:!bg-indigo-200={$isComposingZone}>
 			<Select_all class="outline-none" tabindex="-1" />
 		</button>
 		<button class="btn" type="button" on:click={swapStartEnd}>

@@ -9,13 +9,16 @@
 		endIconBig,
 		type MapContext,
 		type LassoHandlerFinishedEvent,
-		type FeatureProperty
+		type FeatureProperty,
+		type FeaturePropertySegmentZone
 	} from '~/components/map3/leaflet';
 	import { lineString, point as turfPoint } from '@turf/helpers';
 	import { default as turfClone } from '@turf/clone';
-	import { sgstr, asgstr, drawingEnabled } from '~/components/mapStore';
+	import { sgstr, asgstr, drawingEnabled, isComposingZone } from '~/components/mapStore';
 	import { loadCurve as _loadCurve, loadCurveByKey as _loadCurveByKey } from './loadCurve';
 	import { nanoid } from 'nanoid';
+	import { default as turfBuffer } from '@turf/buffer';
+	import { default as turfSimplify } from '@turf/simplify';
 
 	const { getMap } = getContext<MapContext>(key);
 
@@ -92,6 +95,56 @@
 	};
 	controller.addTo(map);
 
+	const tempController = L.geoJson();
+	tempController.options = {
+		onEachFeature: (feature, layer) => {
+			const layerId = tempController.getLayerId(layer);
+			feature.properties.layerId = layerId;
+			// this.geoJsonLayers[feature.properties.id] = layer;
+			if (layer instanceof L.Path) {
+				layer.on('pm:disable', (e) => {
+					// const latLngs = (e.layer as any).getLatLngs();
+					// const coords = L.GeoJSON.latLngsToCoords(latLngs, 1);
+					// const shape = (e.layer as L.Path).pm.getShape();
+					// if (shape === 'Polygon') {
+					// 	coords.forEach((sets) => {
+					// 		sets.push(sets[0]);
+					// 	});
+					// }
+					// const event = {
+					// 	feature: (e.layer as L.Polyline).feature,
+					// 	newCoords: coords
+					// };
+					// this.editedLayer$$.next(event);
+					console.log(e);
+				});
+			}
+		},
+		style: (feature) => {
+			if (!feature) {
+				return {};
+			}
+			const kind = feature.properties.kind;
+			switch (kind) {
+				case 'SegmentLine':
+					return {
+						color: feature.properties.color,
+						weight: feature.properties.weight
+					};
+				case 'SegmentZone':
+					return {
+						color: feature.properties.color,
+						weight: feature.properties.weight,
+						fillOpacity: feature.properties.fillOpacity,
+						pane: 'tempZone'
+					};
+				default:
+					return {};
+			}
+		}
+	};
+	tempController.addTo(map);
+
 	export const loadCurve = async (feature: any) => {
 		const segments = await _loadCurve(feature);
 		addSegments(segments);
@@ -136,6 +189,40 @@
 		for (const curveId of $asgstr.keys()) {
 			swapStartEnd(curveId);
 		}
+	};
+
+	export const buildZone = () => {
+		tempController.clearLayers();
+
+		for (const seg of $asgstr.values()) {
+			$isComposingZone = true;
+			const zone = seg.zone;
+			const line = seg.line;
+
+			const buffered = turfBuffer(line, 100, {
+				units: 'meters'
+			});
+			const tolerance = 100 * 0.0000025; // 20m => 0.00005
+			const simplified = turfSimplify(buffered, {
+				tolerance
+			}) as GeoJSON.Feature<GeoJSON.Polygon, FeaturePropertySegmentZone>;
+			simplified.properties.id = `${seg.curveId}:zone`;
+			simplified.properties.kind = 'SegmentZone';
+			simplified.properties.color = '#00FF00';
+			simplified.properties.fillOpacity = 0.3;
+			simplified.properties.weight = 1;
+
+			tempController.addData(simplified);
+
+			// seg.zone = simplified;
+			// if (zone) {
+			// 	seg.features.pop();
+			// }
+			// seg.features.push(simplified);
+			// controller.addData(simplified);
+		}
+
+		console.log($asgstr);
 	};
 
 	const addSegments = (segments: any[]) => {
