@@ -11,6 +11,7 @@ use tauri::{self, AppHandle, Manager, State};
 
 pub mod curves;
 pub mod get_curves;
+pub mod save_export;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Board {

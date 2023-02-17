@@ -3,6 +3,7 @@
 	import MapComponent from '~/components/map3/MapComponent.svelte';
 	import SegmentsController from '~/components/map3/SegmentsController.svelte';
 	import StartingPointsController from '~/components/map3/StartingPointsController.svelte';
+	import { isEditingZone } from '~/components/mapStore';
 	import SearchBlock from '~/components/SearchBlock.svelte';
 	import ToolBlock from '~/components/ToolBlock.svelte';
 
@@ -40,6 +41,22 @@
 	const onCreateZoneEvent = () => {
 		segmentsController.buildZone();
 	};
+
+	const onExtendZoneEvent = (ev: any) => {
+		segmentsController.buildZone(ev.detail.extend);
+	};
+
+	const onFixedZoneEvent = () => {
+		segmentsController.fixedZone();
+	};
+
+	const onClickedEditZone = () => {
+		$isEditingZone = !$isEditingZone;
+	};
+
+	const onClickedExportSegments = (ev: any) => {
+		segmentsController.exportSegments(ev.detail);
+	};
 </script>
 
 <div class="relative h-full w-full">
@@ -54,6 +71,10 @@
 				on:clickedRemoveSegment={onClickedRemoveSegment}
 				on:clickedSwapStartEnd={onClickedSwapStartEnd}
 				on:createZoneEvent={onCreateZoneEvent}
+				on:extendZoneEvent={onExtendZoneEvent}
+				on:fixedZoneEvent={onFixedZoneEvent}
+				on:clickedEditZone={onClickedEditZone}
+				on:clickedExportSegments={onClickedExportSegments}
 			/>
 		</div>
 	</div>

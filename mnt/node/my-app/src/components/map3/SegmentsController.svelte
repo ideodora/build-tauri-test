@@ -14,11 +14,21 @@
 	} from '~/components/map3/leaflet';
 	import { lineString, point as turfPoint } from '@turf/helpers';
 	import { default as turfClone } from '@turf/clone';
-	import { sgstr, asgstr, drawingEnabled, isComposingZone } from '~/components/mapStore';
+	import {
+		sgstr,
+		asgstr,
+		drawingEnabled,
+		isComposingZone,
+		isEditingZone
+	} from '~/components/mapStore';
 	import { loadCurve as _loadCurve, loadCurveByKey as _loadCurveByKey } from './loadCurve';
 	import { nanoid } from 'nanoid';
 	import { default as turfBuffer } from '@turf/buffer';
 	import { default as turfSimplify } from '@turf/simplify';
+	import tokml from 'tokml';
+	import { save as dialogSave } from '@tauri-apps/api/dialog';
+	import { writeTextFile } from '@tauri-apps/api/fs';
+	import { invoke } from '@tauri-apps/api/tauri';
 
 	const { getMap } = getContext<MapContext>(key);
 
@@ -79,7 +89,7 @@
 						color: feature.properties.color,
 						weight: feature.properties.weight,
 						fillOpacity: feature.properties.fillOpacity,
-						pane: 'buffers'
+						pane: 'zone'
 					};
 				default:
 					return {};
@@ -191,22 +201,25 @@
 		}
 	};
 
-	export const buildZone = () => {
+	export const buildZone = (num: number = 100) => {
 		tempController.clearLayers();
 
 		for (const seg of $asgstr.values()) {
+			console.log('seg:', seg);
+			console.log('segId:', seg.id);
+
 			$isComposingZone = true;
 			const zone = seg.zone;
 			const line = seg.line;
 
-			const buffered = turfBuffer(line, 100, {
+			const buffered = turfBuffer(line, num, {
 				units: 'meters'
 			});
-			const tolerance = 100 * 0.0000025; // 20m => 0.00005
+			const tolerance = num * 0.0000025; // 20m => 0.00005
 			const simplified = turfSimplify(buffered, {
 				tolerance
 			}) as GeoJSON.Feature<GeoJSON.Polygon, FeaturePropertySegmentZone>;
-			simplified.properties.id = `${seg.curveId}:zone`;
+			simplified.properties.id = `${seg.id}:zone`;
 			simplified.properties.kind = 'SegmentZone';
 			simplified.properties.color = '#00FF00';
 			simplified.properties.fillOpacity = 0.3;
@@ -221,8 +234,68 @@
 			// seg.features.push(simplified);
 			// controller.addData(simplified);
 		}
+	};
 
-		console.log($asgstr);
+	export const fixedZone = () => {
+		const layers = tempController.getLayers();
+		const layer = layers[0];
+		const feature = (layer as any).feature;
+
+		feature.properties.color = '#0EA5E9';
+
+		const curveId = feature.properties.id.split(':')[0];
+		const segment = $sgstr.get(curveId);
+
+		const orgZone = segment.zone;
+		if (orgZone) {
+			segment.features.pop();
+		}
+		segment.zone = feature;
+		segment.features.push(feature);
+
+		controller.addData(feature);
+		$isComposingZone = false;
+	};
+
+	export const exportSegments = async (ev: any) => {
+		console.log(ev.fileName);
+
+		const path = await dialogSave({
+			defaultPath: 'exports.zip',
+			filters: [
+				{
+					name: 'Zip',
+					extensions: ['zip']
+				}
+			]
+		});
+		if (path) {
+			const mapper = new Map<string, string>([]);
+
+			for (const seg of $asgstr.values()) {
+				const lineKml = tokml(seg.line);
+				mapper.set(convertIdToKmlFileName(seg.line.properties.id), lineKml);
+
+				if (seg.zone) {
+					const zoneKml = tokml(seg.zone);
+					mapper.set(convertIdToKmlFileName(seg.zone.properties.id), zoneKml);
+				}
+			}
+
+			// writeTextFile(path, 'abc');
+
+			const body = {
+				path,
+				data: [...mapper.entries()]
+			};
+
+			await invoke('save_export', { body });
+		}
+	};
+
+	const convertIdToKmlFileName = (id: string) => {
+		const replaced = id.replace(':', '_');
+		return `${replaced}.kml`;
 	};
 
 	const addSegments = (segments: any[]) => {
@@ -276,6 +349,9 @@
 		controller.removeLayer(segment.line.properties.layerId);
 		controller.removeLayer(segment.start.properties.layerId);
 		controller.removeLayer(segment.end.properties.layerId);
+		if (segment.zone) {
+			controller.removeLayer(segment.zone.properties.layerId);
+		}
 		sgstr.remove(curveId);
 	};
 
@@ -453,6 +529,42 @@
 			});
 		} else {
 			map.pm.disableDraw();
+		}
+
+		if (!$isComposingZone) {
+			tempController.clearLayers();
+		}
+
+		if ($isEditingZone) {
+			for (const seg of $asgstr.values()) {
+				const zone = seg.zone;
+				if (!zone) continue;
+
+				const zoneLayer = controller.getLayer(zone.properties.layerId);
+				if (!zoneLayer) continue;
+
+				if (zoneLayer instanceof L.Path) {
+					(zoneLayer as L.Path).pm.setOptions({
+						limitMarkersToCount: 20,
+						snapDistance: 5
+					});
+					(zoneLayer as L.Path).pm.enable();
+				}
+			}
+		}
+
+		if (!$isEditingZone) {
+			for (const seg of $asgstr.values()) {
+				const zone = seg.zone;
+				if (!zone) continue;
+
+				const zoneLayer = controller.getLayer(zone.properties.layerId);
+				if (!zoneLayer) continue;
+
+				if (zoneLayer instanceof L.Path) {
+					(zoneLayer as L.Path).pm.disable();
+				}
+			}
 		}
 	}
 </script>

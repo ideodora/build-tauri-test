@@ -9,6 +9,9 @@
 	import Layers_clear from 'svelte-google-materialdesign-icons/Layers_clear.svelte';
 	import Content_cut from 'svelte-google-materialdesign-icons/Content_cut.svelte';
 	import Swap_vert from 'svelte-google-materialdesign-icons/Swap_vert.svelte';
+	import Done from 'svelte-google-materialdesign-icons/Done.svelte';
+	import Format_shapes from 'svelte-google-materialdesign-icons/Format_shapes.svelte';
+	import File_download from 'svelte-google-materialdesign-icons/File_download.svelte';
 
 	import { getBounds, addStartingPoint, removeStartingPoints } from '~/components/Map.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
@@ -19,11 +22,16 @@
 		lassoContinue,
 		asgstr,
 		drawingEnabled,
-		isComposingZone
+		isComposingZone,
+		isEditingZone,
+		isExporting
 	} from '~/components/mapStore';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
+
+	let zoneExtendValue = 100;
+	let fileNameValue = 'export';
 
 	$: showSps = $sps.length > 0;
 
@@ -70,8 +78,21 @@
 	}
 
 	function addZone() {
+		if ($isComposingZone) {
+			$isComposingZone = false;
+			return;
+		}
+		zoneExtendValue = 100;
 		dispatch('createZoneEvent', {});
 		// zsgstr.set(100);
+	}
+
+	function extendZone() {
+		dispatch('extendZoneEvent', { extend: zoneExtendValue });
+	}
+
+	function fixedZone() {
+		dispatch('fixedZoneEvent', {});
 	}
 
 	function removeSegment() {
@@ -80,6 +101,14 @@
 
 	function swapStartEnd() {
 		dispatch('clickedSwapStartEnd', {});
+	}
+
+	function editZone() {
+		dispatch('clickedEditZone', {});
+	}
+
+	function exportSegments() {
+		dispatch('clickedExportSegments', { fileName: fileNameValue });
 	}
 </script>
 
@@ -129,20 +158,88 @@
 		{/if}
 	</div>
 	{#if $asgstr.size === 1}
-		<button class="btn" type="button" on:click={addZone} class:!bg-indigo-200={$isComposingZone}>
-			<Select_all class="outline-none" tabindex="-1" />
-		</button>
+		<div class="flex flex-col">
+			<button
+				class="btn mb-1"
+				type="button"
+				on:click={addZone}
+				class:!bg-indigo-200={$isComposingZone}
+			>
+				<Select_all class="outline-none" tabindex="-1" />
+			</button>
+			{#if $isComposingZone}
+				<div class="relatvie pointer-events-none">
+					<div class="absolute flex flex-col">
+						<div
+							class="mb-1 grid w-min grid-cols-[4rem,_max-content] gap-x-px shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:shadow-lg hover:shadow-indigo-600/20"
+						>
+							<input
+								class="pointer-events-auto w-16 rounded-l-sm border-0 py-1 px-2 outline outline-1 outline-gray-400"
+								type="number"
+								bind:value={zoneExtendValue}
+							/>
+							<button
+								on:click={extendZone}
+								type="button"
+								class="pointer-events-auto rounded-r-sm bg-indigo-500 px-2 text-white outline outline-1 outline-gray-400 hover:bg-indigo-600 focus:bg-indigo-600"
+							>
+								m
+							</button>
+						</div>
+						<button class="btn pointer-events-auto" type="button" on:click={fixedZone}>
+							<Done tabindex="-1" />
+						</button>
+					</div>
+				</div>
+			{/if}
+		</div>
 		<button class="btn" type="button" on:click={swapStartEnd}>
 			<Swap_vert tabindex="-1" />
 		</button>
 		<button class="btn" type="button" on:click={offSelect}>
 			<Content_cut class="outline-none" tabindex="-1" />
 		</button>
+		<button class="btn" type="button" on:click={editZone} class:!bg-indigo-200={$isEditingZone}>
+			<Format_shapes class="outline-none" tabindex="-1" />
+		</button>
 	{/if}
 	{#if $asgstr.size > 0}
-		<button class="btn" type="button" on:click={offSelect}>
-			<Save_as class="outline-none" tabindex="-1" />
-		</button>
+		<div class="flex flex-col">
+			<button
+				class="btn mb-1"
+				type="button"
+				class:!bg-indigo-200={$isExporting}
+				on:click={() => {
+					$isExporting = !$isExporting;
+				}}
+			>
+				<Save_as class="outline-none" tabindex="-1" />
+			</button>
+			{#if $isExporting}
+				<div class="relatvie pointer-events-none">
+					<div class="absolute flex flex-col">
+						<div
+							class="mb-1 grid w-min grid-cols-[max-content,_6rem] gap-x-px shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:shadow-lg hover:shadow-indigo-600/20"
+						>
+							<div
+								class="flex items-center rounded-r-sm bg-gray-200 px-2 text-gray-700 outline outline-1 outline-gray-400"
+							>
+								file name
+							</div>
+							<input
+								class="pointer-events-auto w-full rounded-l-sm border-0 py-1 px-2 text-sm outline outline-1 outline-gray-400"
+								type="text"
+								placeholder="export_file"
+								bind:value={fileNameValue}
+							/>
+						</div>
+						<button class="btn pointer-events-auto" type="button" on:click={exportSegments}>
+							<File_download tabindex="-1" />
+						</button>
+					</div>
+				</div>
+			{/if}
+		</div>
 		<button class="btn !bg-red-200" type="button" on:click={removeSegment}>
 			<Layers_clear class="outline-none" tabindex="-1" />
 		</button>

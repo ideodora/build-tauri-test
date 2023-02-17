@@ -9,4 +9,8 @@ declare global {
 	}
 }
 
-export {};
+declare module 'tokml' {
+	export default function (geoJson: any): any;
+}
+
+// export {};

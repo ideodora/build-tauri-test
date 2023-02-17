@@ -12,7 +12,11 @@
       "all": false,
       "dialog": {
         "open": true,
-        "message": true
+        "message": true,
+        "save": true
+      },
+      "fs": {
+        "writeFile": true
       }
     },
     "bundle": {

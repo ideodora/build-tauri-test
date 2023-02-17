@@ -52,7 +52,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             handlers::check_initiation,
             handlers::search_points,
             handlers::curves::curves,
-            handlers::get_curves::get_curves
+            handlers::get_curves::get_curves,
+            handlers::save_export::save_export,
         ])
         // ハンドラからコネクションプールにアクセスできるよう、登録する
         .setup(|app| {
