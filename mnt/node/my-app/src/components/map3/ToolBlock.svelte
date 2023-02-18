@@ -1,32 +1,29 @@
 <script lang="ts">
-	import Timeline from 'svelte-google-materialdesign-icons/Timeline.svelte';
 	import Commit from 'svelte-google-materialdesign-icons/Commit.svelte';
-	import Pin_drop from 'svelte-google-materialdesign-icons/Pin_drop.svelte';
-	import Location_off from 'svelte-google-materialdesign-icons/Location_off.svelte';
-	import Select_all from 'svelte-google-materialdesign-icons/Select_all.svelte';
-	import Save_as from 'svelte-google-materialdesign-icons/Save_as.svelte';
-	import Repeat from 'svelte-google-materialdesign-icons/Repeat.svelte';
-	import Layers_clear from 'svelte-google-materialdesign-icons/Layers_clear.svelte';
 	import Content_cut from 'svelte-google-materialdesign-icons/Content_cut.svelte';
-	import Swap_vert from 'svelte-google-materialdesign-icons/Swap_vert.svelte';
 	import Done from 'svelte-google-materialdesign-icons/Done.svelte';
-	import Format_shapes from 'svelte-google-materialdesign-icons/Format_shapes.svelte';
 	import File_download from 'svelte-google-materialdesign-icons/File_download.svelte';
-
-	import { getBounds, addStartingPoint, removeStartingPoints } from '~/components/Map.svelte';
-	import { invoke } from '@tauri-apps/api/tauri';
+	import Format_shapes from 'svelte-google-materialdesign-icons/Format_shapes.svelte';
+	import Layers_clear from 'svelte-google-materialdesign-icons/Layers_clear.svelte';
+	import Location_off from 'svelte-google-materialdesign-icons/Location_off.svelte';
+	import Pin_drop from 'svelte-google-materialdesign-icons/Pin_drop.svelte';
+	import Repeat from 'svelte-google-materialdesign-icons/Repeat.svelte';
+	import Save_as from 'svelte-google-materialdesign-icons/Save_as.svelte';
+	import Select_all from 'svelte-google-materialdesign-icons/Select_all.svelte';
+	import Swap_vert from 'svelte-google-materialdesign-icons/Swap_vert.svelte';
+	import Timeline from 'svelte-google-materialdesign-icons/Timeline.svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	import {
-		sps,
-		lassoEnabled,
-		lassoContinue,
 		asgstr,
 		drawingEnabled,
 		isComposingZone,
 		isEditingZone,
-		isExporting
+		isExporting,
+		lassoContinue,
+		lassoEnabled,
+		sps
 	} from '~/components/mapStore';
-	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -37,34 +34,6 @@
 
 	async function onPin() {
 		dispatch('clickedPin', {});
-		return;
-
-		const bounds = getBounds();
-		console.log(bounds);
-
-		const { lat: swLat, lng: swLng } = bounds.getSouthWest();
-		const { lat: neLat, lng: neLng } = bounds.getNorthEast();
-
-		const params = {
-			min: {
-				lat: swLat,
-				lng: swLng
-			},
-			max: {
-				lat: neLat,
-				lng: neLng
-			}
-		};
-
-		const startingPoints = await invoke<any>('search_points', { bounds: params });
-
-		console.log(startingPoints.points);
-		sps.set(startingPoints.points);
-
-		// removeStartingPoints();
-		// for (const point of startingPoints.points) {
-		// 	addStartingPoint(point);
-		// }
 	}
 
 	function offPin() {

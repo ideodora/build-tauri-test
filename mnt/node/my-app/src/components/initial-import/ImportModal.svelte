@@ -2,11 +2,11 @@
 	import { Dialog, DialogOverlay } from '@rgossiaux/svelte-headlessui';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-
 	import { invoke } from '@tauri-apps/api/tauri';
 	import { open } from '@tauri-apps/api/dialog';
 	import { listen, type UnlistenFn } from '@tauri-apps/api/event';
-	import ProgressCircle from '~/components/ProgressCircle.svelte';
+
+	import ProgressCircle from '~/components/initial-import/ProgressCircle.svelte';
 
 	let isOpen = true;
 	let isLoaded = false;
@@ -34,6 +34,10 @@
 		const dataReady = await invoke<boolean>('check_initiation');
 		isLoaded = true;
 		isOpen = !dataReady;
+
+		return () => {
+			unlisten();
+		};
 	});
 
 	const greet = async () => {

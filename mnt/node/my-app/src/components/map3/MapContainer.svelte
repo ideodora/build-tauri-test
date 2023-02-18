@@ -3,9 +3,10 @@
 	import MapComponent from '~/components/map3/MapComponent.svelte';
 	import SegmentsController from '~/components/map3/SegmentsController.svelte';
 	import StartingPointsController from '~/components/map3/StartingPointsController.svelte';
+	import SearchBlock from '~/components/map3/SearchBlock.svelte';
+	import ToolBlock from '~/components/map3/ToolBlock.svelte';
+
 	import { isEditingZone } from '~/components/mapStore';
-	import SearchBlock from '~/components/SearchBlock.svelte';
-	import ToolBlock from '~/components/ToolBlock.svelte';
 
 	let startingPointsController: StartingPointsController;
 	let segmentsController: SegmentsController;

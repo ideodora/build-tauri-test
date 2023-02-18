@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount, setContext } from 'svelte';
 	import { L, key, createMap } from '~/components/map3/leaflet';
-	import { drawingEnabled } from '~/components/mapStore';
 
 	let element: HTMLDivElement;
 	let map: L.Map;

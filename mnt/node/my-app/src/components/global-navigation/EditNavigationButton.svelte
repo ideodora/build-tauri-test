@@ -38,10 +38,6 @@
 	// }
 </script>
 
-<button
-	on:click={greet}
-	class="w-min rounded-md bg-white py-1 px-2 hover:bg-gray-200"
-	type="button"
->
+<a href="/" class="w-min rounded-md bg-white py-1 px-2 hover:bg-gray-200">
 	<Shape_line tabindex="-1" />
-</button>
+</a>

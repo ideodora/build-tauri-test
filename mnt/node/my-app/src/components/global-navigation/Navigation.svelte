@@ -1,9 +1,9 @@
 <script lang="ts">
-	import BrowseNavigationButton from '~/components/BrowseNavigationButton.svelte';
-	import EditNavigationButton from '~/components/EditNavigationButton.svelte';
-	import Logo from '~/components/Logo.svelte';
-	import LogoutButton from '~/components/LogoutButton.svelte';
-	import UserPill from '~/components/UserPill.svelte';
+	import BrowseNavigationButton from '~/components/global-navigation/BrowseNavigationButton.svelte';
+	import EditNavigationButton from '~/components/global-navigation/EditNavigationButton.svelte';
+	import Logo from '~/components/global-navigation/Logo.svelte';
+	import LogoutButton from '~/components/global-navigation/LogoutButton.svelte';
+	import UserPill from '~/components/global-navigation/UserPill.svelte';
 
 	import { open } from '@tauri-apps/api/dialog';
 
