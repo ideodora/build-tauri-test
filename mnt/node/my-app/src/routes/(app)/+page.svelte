@@ -1,12 +1,7 @@
 <script lang="ts">
 	import MapContainer from '~/components/map3/MapContainer.svelte';
-	import Navigation from '~/components/global-navigation/Navigation.svelte';
 	import ImportModal from '~/components/initial-import/ImportModal.svelte';
 </script>
 
 <ImportModal />
-
-<div class="grid h-full w-full grid-rows-[auto,_min-content]">
-	<MapContainer />
-	<Navigation />
-</div>
+<MapContainer />

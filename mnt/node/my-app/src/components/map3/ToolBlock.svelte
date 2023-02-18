@@ -12,7 +12,7 @@
 	import Select_all from 'svelte-google-materialdesign-icons/Select_all.svelte';
 	import Swap_vert from 'svelte-google-materialdesign-icons/Swap_vert.svelte';
 	import Timeline from 'svelte-google-materialdesign-icons/Timeline.svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { beforeUpdate, createEventDispatcher, onMount } from 'svelte';
 
 	import {
 		asgstr,
@@ -79,6 +79,14 @@
 	function exportSegments() {
 		dispatch('clickedExportSegments', { fileName: fileNameValue });
 	}
+
+	beforeUpdate(() => {
+		debugger;
+	});
+
+	onMount(() => {
+		debugger;
+	});
 </script>
 
 <div class="pointer-events-auto col-span-2 flex w-max items-start gap-x-2">

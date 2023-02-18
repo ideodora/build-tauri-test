@@ -71,49 +71,51 @@
 	};
 </script>
 
-<Dialog open={isOpen} class="fixed inset-0 z-20">
-	<DialogOverlay class="absolute inset-0 z-10 bg-black/80" />
+<div class="absolute">
+	<Dialog open={isOpen} class="fixed inset-0 z-20">
+		<DialogOverlay class="absolute inset-0 z-10 bg-black/80" />
 
-	<div class="absolute inset-0 z-20 flex items-center justify-center">
-		<div class="relative z-20 rounded-sm bg-white p-8">
-			{#if isLoaded && !isImporting}
-				<div class="block" in:fade>
-					<h1 class="mb-4 text-3xl text-gray-800">First in first.</h1>
+		<div class="absolute inset-0 z-20 flex items-center justify-center">
+			<div class="relative z-20 rounded-sm bg-white p-8">
+				{#if isLoaded && !isImporting}
+					<div class="block" in:fade>
+						<h1 class="mb-4 text-3xl text-gray-800">First in first.</h1>
 
-					<p class="mb-4">
-						Import source.zip for registered points and streams.<br />
-						If not, it's no reason to use this App.
-					</p>
-
-					<button
-						class="rounded-md bg-indigo-500 py-1 px-4 text-white hover:bg-indigo-600"
-						on:click={greet}>Import</button
-					>
-				</div>
-			{:else if isLoaded && isImporting}
-				<div class="flex flex-wrap gap-4" in:fade>
-					<div class="flex flex-col">
-						<h1 class="mb-4 text-3xl text-gray-800">Importing...</h1>
-
-						<p class="mb-4 max-w-xs">
-							{current} / {total}<br />
-							{message}
+						<p class="mb-4">
+							Import source.zip for registered points and streams.<br />
+							If not, it's no reason to use this App.
 						</p>
 
-						<div class="mt-auto block">
-							<button
-								class="rounded-md bg-gray-100 py-1 px-4 text-gray-700 hover:bg-gray-200"
-								on:click={cancel}>Cancel</button
-							>
+						<button
+							class="rounded-md bg-indigo-500 py-1 px-4 text-white hover:bg-indigo-600"
+							on:click={greet}>Import</button
+						>
+					</div>
+				{:else if isLoaded && isImporting}
+					<div class="flex flex-wrap gap-4" in:fade>
+						<div class="flex flex-col">
+							<h1 class="mb-4 text-3xl text-gray-800">Importing...</h1>
+
+							<p class="mb-4 max-w-xs">
+								{current} / {total}<br />
+								{message}
+							</p>
+
+							<div class="mt-auto block">
+								<button
+									class="rounded-md bg-gray-100 py-1 px-4 text-gray-700 hover:bg-gray-200"
+									on:click={cancel}>Cancel</button
+								>
+							</div>
+						</div>
+						<div class="h-40 w-40">
+							<ProgressCircle {progress} />
 						</div>
 					</div>
-					<div class="h-40 w-40">
-						<ProgressCircle {progress} />
-					</div>
-				</div>
-			{:else}
-				<div class="animate-pulse">data checking...</div>
-			{/if}
+				{:else}
+					<div class="animate-pulse">data checking...</div>
+				{/if}
+			</div>
 		</div>
-	</div>
-</Dialog>
+	</Dialog>
+</div>

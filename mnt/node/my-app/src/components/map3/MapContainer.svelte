@@ -60,7 +60,7 @@
 	};
 </script>
 
-<div class="relative h-full w-full">
+<div class="relative">
 	<div class="pointer-events-none absolute inset-0 z-20">
 		<div class="pl-2 pt-2">
 			<SearchBlock on:clickedSearchRiver={onClickedSearchRiver} />
