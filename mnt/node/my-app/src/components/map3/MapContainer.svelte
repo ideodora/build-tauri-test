@@ -58,9 +58,13 @@
 	const onClickedExportSegments = (ev: any) => {
 		segmentsController.exportSegments(ev.detail);
 	};
+
+	const onClickedSave = (ev: any) => {
+		segmentsController.saveActivesAs(ev.detail.fileName);
+	};
 </script>
 
-<div class="relative">
+<div class="relative h-full">
 	<div class="pointer-events-none absolute inset-0 z-20">
 		<div class="pl-2 pt-2">
 			<SearchBlock on:clickedSearchRiver={onClickedSearchRiver} />
@@ -76,6 +80,7 @@
 				on:fixedZoneEvent={onFixedZoneEvent}
 				on:clickedEditZone={onClickedEditZone}
 				on:clickedExportSegments={onClickedExportSegments}
+				on:clickedSave={onClickedSave}
 			/>
 		</div>
 	</div>

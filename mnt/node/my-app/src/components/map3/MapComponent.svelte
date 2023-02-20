@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { onMount, setContext } from 'svelte';
+	import { createEventDispatcher, onMount, setContext } from 'svelte';
 	import { L, key, createMap } from '~/components/map3/leaflet';
+
+	const dispathcer = createEventDispatcher();
 
 	let element: HTMLDivElement;
 	let map: L.Map;
@@ -15,6 +17,7 @@
 		// for zone layer zindex
 		map.createPane('tempZone').style.zIndex = '250';
 		map.createPane('zone').style.zIndex = '350';
+		dispathcer('ready');
 	});
 </script>
 

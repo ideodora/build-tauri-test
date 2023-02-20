@@ -5,13 +5,14 @@ use sqlx::{
     sqlite::{
         SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteRow, SqliteSynchronous,
     },
-    Row, SqlitePool,
+    Execute, QueryBuilder, Row, Sqlite, SqlitePool,
 };
 use std::fs;
 use tauri::AppHandle;
 
 use crate::handlers::{
-    curves::CurveId, get_curves::CurveKey, Bounds, Curve, Point, RiverCandidate,
+    create_watershed::CreateBody, curves::CurveId, get_curves::CurveKey,
+    watersheds::DbResultWatershed, Bounds, Curve, Point, RiverCandidate,
 };
 
 /// このモジュール内の関数の戻り値型
@@ -331,7 +332,114 @@ pub async fn get_curves(pool: &SqlitePool, curve_key: &CurveKey) -> DbResult<Vec
         columns.insert(i, Curve::new(&id, &segments));
     }
 
-    Ok(columns.into_iter().map(|(_k, v)| v).collect())
+    let ppp = columns.into_iter().map(|(_k, v)| v).collect();
+    Ok(ppp)
 
     // results.contains(&false)
+}
+
+pub async fn create_watershed(pool: &SqlitePool, body: &CreateBody) -> DbResult<()> {
+    println!("database::create_watershed");
+
+    let mut query_results: [bool; 2] = [false, true];
+
+    const SQL1: &str = "
+      INSERT INTO watersheds (name)
+      VALUES (?)
+      ;
+    ";
+
+    let row = sqlx::query(SQL1).bind(&body.name).execute(pool).await;
+
+    let watershed_id = match row {
+        Ok(row) => {
+            println!("row: {:?}", row);
+            let insert_id = u32::try_from(row.last_insert_rowid()).unwrap();
+            println!("last_insert_rowid: {}", insert_id);
+            query_results[0] = true;
+            insert_id
+        }
+        Err(e) => {
+            println!("{}", e);
+            panic!("failed insert watershed")
+        }
+    };
+
+    let mut query_builder: QueryBuilder<Sqlite> =
+        QueryBuilder::new("INSERT INTO watershed_items (watershed_id, `key`, data) ");
+
+    query_builder.push_values(body.data.iter(), |mut b, source| {
+        b.push_bind(&watershed_id)
+            .push_bind(&source.0)
+            .push_bind(&source.1);
+    });
+
+    let query = query_builder.build();
+
+    let rows = query.execute(pool).await;
+
+    match rows {
+        Ok(rows) => {
+            println!("rows: {:#?}", rows);
+            query_results[1] = true;
+        }
+        Err(e) => {
+            println!("{}", e);
+        }
+    };
+
+    println!("done inserts");
+    Ok(())
+}
+
+pub async fn watersheds(pool: &SqlitePool) -> DbResult<Vec<DbResultWatershed>> {
+    println!("database::watershed");
+
+    const SQL1: &str = "
+      -- SQLite
+      SELECT
+        watersheds.*,
+        item.id AS item__id,
+        item.`key` AS item__key,
+        item.data AS item__data
+      FROM
+        watersheds
+        LEFT JOIN watershed_items AS item ON item.watershed_id = watersheds.id
+      ;
+    ";
+
+    let rows = sqlx::query(SQL1).fetch_all(pool).await;
+
+    let rows2 = match rows {
+        Ok(a) => {
+            println!("rows {:?}", a[0].columns());
+            a
+        }
+        Err(e) => {
+            println!("{}", e);
+            panic!("failed to query")
+        }
+    };
+
+    let mut columns = BTreeMap::new();
+
+    let hoge = rows2.iter();
+    let piyo = hoge.enumerate();
+
+    for (i, row) in piyo {
+        let id: u32 = row.try_get("id").unwrap();
+        let name: &str = row.try_get("name").unwrap();
+        // let bounds: &str = row.try_get("bounds").unwrap();
+        let item_id: u32 = row.try_get("item__id").unwrap();
+        let item_key: &str = row.try_get("item__key").unwrap();
+        let item_data: &str = row.try_get("item__data").unwrap();
+        columns.insert(
+            i,
+            DbResultWatershed::new(id, &name, item_id, &item_key, &item_data),
+        );
+    }
+
+    let results = columns.into_iter().map(|(_, v)| v).collect();
+
+    Ok(results)
 }

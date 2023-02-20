@@ -54,6 +54,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             handlers::curves::curves,
             handlers::get_curves::get_curves,
             handlers::save_export::save_export,
+            handlers::create_watershed::create_watershed,
+            handlers::watersheds::watersheds
         ])
         // ハンドラからコネクションプールにアクセスできるよう、登録する
         .setup(|app| {

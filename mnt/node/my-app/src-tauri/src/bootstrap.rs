@@ -19,10 +19,8 @@ pub fn init(database_config: &DatabaseConfig) -> Result<SqlitePool, Box<dyn Erro
     // SQLiteのコネクションプールを作成する
     let sqlite_pool = async_runtime::block_on(database::create_sqlite_pool(&database_url))?;
 
-    //  データベースファイルが存在しなかったなら、マイグレーションSQLを実行する
-    if !db_exists {
-        async_runtime::block_on(database::migrate_database(&sqlite_pool))?;
-    }
+    // マイグレーションSQLを実行する
+    async_runtime::block_on(database::migrate_database(&sqlite_pool))?;
 
     println!("{}, {}", database_url, db_exists);
 

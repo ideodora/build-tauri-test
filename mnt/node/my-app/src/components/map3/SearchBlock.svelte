@@ -54,7 +54,7 @@
 </script>
 
 <div
-	class="pointer-events-auto grid w-min grid-cols-[20rem,_max-content] gap-x-px shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:shadow-lg hover:shadow-indigo-600/20"
+	class="pointer-events-auto grid w-min grid-cols-[20rem,_max-content] gap-x-px shadow-md shadow-indigo-600/30 transition hover:shadow-lg hover:shadow-indigo-600/20 hover:-translate-y-px"
 >
 	<input
 		bind:value={query}
@@ -70,10 +70,10 @@
 	</button>
 </div>
 <div
-	class="pointer-events-auto mt-1 w-80 bg-white shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:shadow-lg hover:shadow-indigo-600/20"
+	class="pointer-events-auto mt-1 w-80 bg-white shadow-md shadow-indigo-600/30 transition hover:shadow-lg hover:shadow-indigo-600/20 hover:-translate-y-px"
 >
 	{#if visible}
-		<ul class="max-h-64 overflow-auto py-2" transition:fly={{ y: -200, duration: 2000 }}>
+		<ul class="max-h-64 overflow-auto py-2">
 			{#each candidates as candidate}
 				<li>
 					<a

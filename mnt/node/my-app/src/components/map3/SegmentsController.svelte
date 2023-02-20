@@ -293,6 +293,55 @@
 		}
 	};
 
+	export const saveActivesAs = async (fileName: string) => {
+		console.log('watershed');
+		console.log('saveActivesAs:', fileName);
+
+		const mapper = new Map<string, string>([]);
+		for (const [key, value] of $asgstr.entries()) {
+			console.log(key, value);
+			const source = { ...value, features: undefined };
+			mapper.set(key, JSON.stringify(source));
+		}
+		console.log(mapper);
+
+		// TODO: maybe calculate bounds here and save
+
+		const body = {
+			name: fileName,
+			data: [...mapper.entries()]
+		};
+		await invoke('create_watershed', { body });
+	};
+
+	export const loadSegments = (segments: any[]) => {
+		for (const segment of segments) {
+			const curveId = segment.key;
+			const data = segment.data;
+
+			data.start.properties.icon = startIcon();
+			data.end.properties.icon = endIcon();
+
+			const features = [data.line, data.start, data.end];
+
+			controller.addData(data.line);
+			controller.addData(data.start);
+			controller.addData(data.end);
+			if (data.zone) {
+				features.push(data.zone);
+				controller.addData(data.zone);
+			}
+
+			sgstr.add(curveId, {
+				id: curveId,
+				features,
+				line: data.line,
+				start: data.start,
+				end: data.end
+			});
+		}
+	};
+
 	const convertIdToKmlFileName = (id: string) => {
 		const replaced = id.replace(':', '_');
 		return `${replaced}.kml`;

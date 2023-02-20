@@ -9,9 +9,11 @@ use zip::ZipArchive;
 use crate::{database, emit_import_prgress};
 use tauri::{self, AppHandle, Manager, State};
 
+pub mod create_watershed;
 pub mod curves;
 pub mod get_curves;
 pub mod save_export;
+pub mod watersheds;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Board {

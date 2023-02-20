@@ -28,7 +28,7 @@
 	const dispatch = createEventDispatcher();
 
 	let zoneExtendValue = 100;
-	let fileNameValue = 'export';
+	let fileNameValue = '一時保存';
 
 	$: showSps = $sps.length > 0;
 
@@ -80,13 +80,10 @@
 		dispatch('clickedExportSegments', { fileName: fileNameValue });
 	}
 
-	beforeUpdate(() => {
-		debugger;
-	});
-
-	onMount(() => {
-		debugger;
-	});
+	function save() {
+		$isExporting = false;
+		dispatch('clickedSave', { fileName: fileNameValue });
+	}
 </script>
 
 <div class="pointer-events-auto col-span-2 flex w-max items-start gap-x-2">
@@ -148,7 +145,7 @@
 				<div class="relatvie pointer-events-none">
 					<div class="absolute flex flex-col">
 						<div
-							class="mb-1 grid w-min grid-cols-[4rem,_max-content] gap-x-px shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:shadow-lg hover:shadow-indigo-600/20"
+							class="mb-1 grid w-min grid-cols-[4rem,_max-content] gap-x-px shadow-md shadow-indigo-600/30 transition hover:shadow-lg hover:shadow-indigo-600/20 hover:-translate-y-px"
 						>
 							<input
 								class="pointer-events-auto w-16 rounded-l-sm border-0 py-1 px-2 outline outline-1 outline-gray-400"
@@ -181,6 +178,9 @@
 		</button>
 	{/if}
 	{#if $asgstr.size > 0}
+		<button class="btn pointer-events-auto" type="button" on:click={exportSegments}>
+			<File_download tabindex="-1" />
+		</button>
 		<div class="flex flex-col">
 			<button
 				class="btn mb-1"
@@ -196,27 +196,28 @@
 				<div class="relatvie pointer-events-none">
 					<div class="absolute flex flex-col">
 						<div
-							class="mb-1 grid w-min grid-cols-[max-content,_6rem] gap-x-px shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:shadow-lg hover:shadow-indigo-600/20"
+							class="mb-1 grid w-min grid-cols-[max-content,_auto] gap-x-px shadow-md shadow-indigo-600/30 transition hover:shadow-lg hover:shadow-indigo-600/20 hover:-translate-y-px"
 						>
 							<div
 								class="flex items-center rounded-r-sm bg-gray-200 px-2 text-gray-700 outline outline-1 outline-gray-400"
 							>
-								file name
+								Save as
 							</div>
 							<input
-								class="pointer-events-auto w-full rounded-l-sm border-0 py-1 px-2 text-sm outline outline-1 outline-gray-400"
+								class="pointer-events-auto inline-block w-max rounded-l-sm border-0 py-1 px-2 text-sm outline outline-1 outline-gray-400"
 								type="text"
-								placeholder="export_file"
+								placeholder="name"
 								bind:value={fileNameValue}
 							/>
 						</div>
-						<button class="btn pointer-events-auto" type="button" on:click={exportSegments}>
-							<File_download tabindex="-1" />
+						<button class="btn pointer-events-auto" type="button" on:click={save}>
+							<Done tabindex="-1" />
 						</button>
 					</div>
 				</div>
 			{/if}
 		</div>
+
 		<button class="btn !bg-red-200" type="button" on:click={removeSegment}>
 			<Layers_clear class="outline-none" tabindex="-1" />
 		</button>
@@ -260,6 +261,6 @@
 
 <style lang="postcss">
 	.btn {
-		@apply aspect-square w-min rounded-md border border-gray-400 bg-white p-1 shadow-md shadow-indigo-600/30 transition hover:-translate-y-px hover:bg-gray-200 hover:shadow-lg hover:shadow-indigo-600/20;
+		@apply aspect-square w-min rounded-md border border-gray-400 bg-white p-1 shadow-md shadow-indigo-600/30 transition hover:bg-gray-200 hover:shadow-lg hover:shadow-indigo-600/20 hover:-translate-y-px;
 	}
 </style>
