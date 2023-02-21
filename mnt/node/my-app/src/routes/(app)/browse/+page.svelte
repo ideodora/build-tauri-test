@@ -7,6 +7,11 @@
 
 	import { featureStore } from '~/components/map4/watershedStore';
 	import { watershedStore } from '~/routes/(app)/browse/store';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		featureStore.reset();
+	});
 
 	const onMapReady = async () => {
 		const res: any = await invoke('watersheds');
