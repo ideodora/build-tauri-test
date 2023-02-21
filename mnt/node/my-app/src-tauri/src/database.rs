@@ -443,3 +443,29 @@ pub async fn watersheds(pool: &SqlitePool) -> DbResult<Vec<DbResultWatershed>> {
 
     Ok(results)
 }
+
+pub async fn delete_watershed(pool: &SqlitePool, id: &u32) {
+    println!("database::delete_watershed");
+
+    const SQL1: &str = "
+      -- SQLite
+      pragma foreign_keys = ON;
+
+      DELETE FROM watersheds
+      WHERE
+        id = ?
+      ;
+    ";
+
+    let row = sqlx::query(SQL1).bind(&id).execute(pool).await;
+
+    match row {
+        Ok(row) => {
+            println!("delete success");
+        }
+        Err(e) => {
+            println!("{:#?}", e);
+            panic!("delete error");
+        }
+    }
+}

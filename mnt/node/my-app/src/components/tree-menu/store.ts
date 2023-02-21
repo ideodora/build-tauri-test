@@ -18,3 +18,15 @@ function createStore() {
 }
 
 export const store = createStore();
+
+function createActiveWatershedId() {
+	const { subscribe, set, update } = writable<number>(-1);
+
+	return {
+		subscribe,
+		reset: () => set(-1),
+		set,
+		update
+	};
+}
+export const activeWatershedId = createActiveWatershedId();

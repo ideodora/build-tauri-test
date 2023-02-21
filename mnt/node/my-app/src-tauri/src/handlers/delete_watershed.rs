@@ -7,6 +7,11 @@ use tauri::{self, State};
 // use super::{CurvesResponse, LatLng};
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct Request {
+    id: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct WatershedResponse {
     watersheds: Vec<TheParent>,
 }
@@ -64,22 +69,24 @@ impl TheChild {
 }
 
 #[tauri::command]
-pub(crate) async fn watersheds(
+pub(crate) async fn delete_watershed(
     _app_handle: tauri::AppHandle,
     sqlite_pool: State<'_, sqlx::SqlitePool>,
-) -> Result<WatershedResponse, String> {
-    println!("watersheds");
+    payload: Request,
+) -> Result<(), String> {
+    println!("delete_watershed, {}", payload.id);
 
-    let _results = database::watersheds(&*sqlite_pool).await.unwrap();
+    database::delete_watershed(&*sqlite_pool, &payload.id).await;
 
-    let folded = _results.iter().fold(BTreeMap::new(), |mut acc, v| {
-        let parent = acc.entry(v.id).or_insert(TheParent::new(v.id, &v.name));
-        let child = TheChild::new(v.item_id, &v.item_key, &v.item_data);
-        parent.children.push(child);
-        acc
-    });
+    // let folded = _results.iter().fold(BTreeMap::new(), |mut acc, v| {
+    //     let parent = acc.entry(v.id).or_insert(TheParent::new(v.id, &v.name));
+    //     let child = TheChild::new(v.item_id, &v.item_key, &v.item_data);
+    //     parent.children.push(child);
+    //     acc
+    // });
 
-    Ok(WatershedResponse {
-        watersheds: folded.into_iter().map(|(_, v)| v).collect(),
-    })
+    // Ok(WatershedResponse {
+    //     watersheds: folded.into_iter().map(|(_, v)| v).collect(),
+    // })
+    Ok(())
 }

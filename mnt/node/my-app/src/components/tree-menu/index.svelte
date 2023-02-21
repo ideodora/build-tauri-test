@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { store } from './store';
+	import { activeWatershedId, store } from './store';
 	import Chevron_right from 'svelte-google-materialdesign-icons/Chevron_right.svelte';
 	import Expand_more from 'svelte-google-materialdesign-icons/Expand_more.svelte';
 	import Visibility from 'svelte-google-materialdesign-icons/Visibility.svelte';
@@ -8,15 +8,24 @@
 	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
 	import File_download from 'svelte-google-materialdesign-icons/File_download.svelte';
 	import Content_copy from 'svelte-google-materialdesign-icons/Content_copy.svelte';
+	import Clear from 'svelte-google-materialdesign-icons/Clear.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { watershedStore } from '~/routes/(app)/browse/store';
 	import { segmentVisibility, zoneVisibility } from '~/components/map3/watershedStore';
 
 	const dispatch = createEventDispatcher();
 
-	const onClickWatershed = (index: number) => {
+	const onClickWatershedKeydown = (e: KeyboardEvent, id: number) => {
+		if (e.key === 'Enter') {
+			onClickWatershed(id);
+		}
+	};
+	const onClickWatershed = (id: number) => {
+		$activeWatershedId = id;
+	};
+
+	const onClickHeading = (index: number) => {
 		store.toggle(index);
-		dispatch('clickedWatershed', { index });
 	};
 
 	const toggleSegment = () => {
@@ -26,28 +35,37 @@
 	const toggleZone = () => {
 		$zoneVisibility = !$zoneVisibility;
 	};
+
+	const deleteWatershed = () => {
+		dispatch('deleteWatershed');
+	};
 </script>
 
 <ul class="tree text-xs font-thin text-gray-800">
 	{#each $watershedStore as item, index0}
-		<li>
+		<li
+			on:keydown={(e) => onClickWatershedKeydown(e, item.id)}
+			on:click={() => onClickWatershed(item.id)}
+		>
 			<details open={$store.get(`${index0}`)}>
 				<summary
 					class="bg-white"
-					on:click={() => onClickWatershed(index0)}
-					class:outline={index0 === 1}
-					class:outline-1={index0 === 1}
-					class:outline-stone-400={index0 === 1}
-					class:-outline-offset-1={index0 === 1}
+					on:click={() => onClickHeading(index0)}
+					class:outline={$activeWatershedId === item.id}
+					class:outline-1={$activeWatershedId === item.id}
+					class:outline-stone-400={$activeWatershedId === item.id}
+					class:-outline-offset-1={$activeWatershedId === item.id}
 				>
 					{#if $store.get(`${index0}`)}
 						<Expand_more size="20" />
 					{:else}
 						<Chevron_right size="20" />
 					{/if}
+
 					<span class="mr-auto">{item.name}</span>
-					<div class="mr-1 flex gap-x-1">
-						{#if index0 === 1}
+
+					{#if $activeWatershedId === item.id}
+						<div class="mr-1 flex gap-x-1">
 							<div class="flex h-[18px] w-[18px] items-center justify-center rotate-x-180">
 								<Content_copy size="16" />
 							</div>
@@ -61,8 +79,15 @@
 									<Edit size="12" />
 								</div>
 							</div>
-						{/if}
-					</div>
+							<button
+								type="button"
+								class="flex h-[18px] w-[18px] items-center justify-center"
+								on:click|preventDefault|stopPropagation={deleteWatershed}
+							>
+								<Clear size="18" />
+							</button>
+						</div>
+					{/if}
 				</summary>
 				{#if item.children.length > 0}
 					<ul>

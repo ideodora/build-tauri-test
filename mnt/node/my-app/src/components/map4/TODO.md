@@ -1,4 +1,3 @@
 - delete saved watershed
-- reset plots when comes to browse page
 - tidy LassoController, LineDrawer, SegmentController create segment
 - add rectangle select

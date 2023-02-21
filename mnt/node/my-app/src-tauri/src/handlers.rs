@@ -11,6 +11,7 @@ use tauri::{self, AppHandle, Manager, State};
 
 pub mod create_watershed;
 pub mod curves;
+pub mod delete_watershed;
 pub mod get_curves;
 pub mod save_export;
 pub mod watersheds;
