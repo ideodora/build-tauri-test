@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { invoke } from '@tauri-apps/api/tauri';
-	import MapComponent from '~/components/map3/MapComponent.svelte';
-	import SegmentsProjection from '~/components/map3/SegmentsProjection.svelte';
-	import { segmentStore } from '~/components/map3/watershedStore';
-	import ZoneProjection from '~/components/map3/ZoneProjection.svelte';
+	import MapComponent from '~/components/map4/MapComponent.svelte';
+	import SegmentsProjection from '~/components/map4/SegmentsProjection.svelte';
+	import ZoneProjection from '~/components/map4/ZoneProjection.svelte';
 	import TreeMenu from '~/components/tree-menu/index.svelte';
-	import { watershedStore } from '~/routes/(app)/browse/store';
 
-	let segmentsProjection: SegmentsProjection;
+	import { featureStore } from '~/components/map4/watershedStore';
+	import { watershedStore } from '~/routes/(app)/browse/store';
 
 	const onMapReady = async () => {
 		const res: any = await invoke('watersheds');
@@ -22,10 +21,10 @@
 			return { ...child, data: JSON.parse(child.data) };
 		});
 
-		segmentStore.reset();
+		featureStore.reset();
 
 		for (const child of children) {
-			segmentStore.add(child.data);
+			featureStore.add(child.key, child.data);
 		}
 	};
 </script>
@@ -36,7 +35,7 @@
 	</div>
 	<div class="bg-slate-100">
 		<MapComponent on:ready={onMapReady}>
-			<SegmentsProjection bind:this={segmentsProjection} />
+			<SegmentsProjection />
 			<ZoneProjection />
 		</MapComponent>
 	</div>

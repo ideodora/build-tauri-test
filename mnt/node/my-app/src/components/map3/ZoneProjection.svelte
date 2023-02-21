@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { key, L, type MapContext } from '~/components/map3/leaflet';
-	import { asgstr, sgstr } from '~/components/mapStore';
+	import {
+		activeFeatureStoreArray,
+		activeZone,
+		isZoneFeature
+	} from '~/components/map4/watershedStore';
+	import { asgstr, sgstr, isEditingZone } from '~/components/mapStore';
 	import { segmentStoreArray } from './watershedStore';
 
 	const { getMap } = getContext<MapContext>(key);
