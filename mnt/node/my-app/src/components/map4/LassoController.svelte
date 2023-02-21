@@ -1,17 +1,23 @@
 <script lang="ts">
 	import L from 'leaflet';
 	import 'leaflet-lasso';
-	import { lassoEnabled, lassoContinue } from '~/components/mapStore';
+	import { lassoEnabled, lassoContinue, isCutting } from '~/components/mapStore';
 	import { FINISHED_EVENT, type LassoHandlerFinishedEvent } from 'leaflet-lasso';
 	import { getContext } from 'svelte';
 	import { endIcon, startIcon, key, type MapContext } from '~/components/map4/leaflet';
 	import {
+		activeFeatureStoreArray,
 		activeSegment,
 		featureStore,
+		isSegmentFeature,
 		type SegmentFeature
 	} from '~/components/map4/watershedStore';
 	import { nanoid } from 'nanoid';
 	import { lineString, point as turfPoint } from '@turf/helpers';
+	import lineToPolygon from '@turf/line-to-polygon';
+	import lineSplit from '@turf/line-split';
+	import booleanWithin from '@turf/boolean-within';
+	import lineSliceAlong from '@turf/line-slice-along';
 
 	const { getMap } = getContext<MapContext>(key);
 	const map = getMap();
@@ -22,13 +28,20 @@
 	// something to do with MODE
 
 	map.on(FINISHED_EVENT, (ev: unknown) => {
-		lassoEnabled.set(false);
-
 		const event = ev as LassoHandlerFinishedEvent;
-		mergeSegment(event);
 
-		if ($lassoContinue) {
-			lassoEnabled.set(true);
+		if ($lassoEnabled) {
+			mergeSegment(event);
+			$lassoEnabled = false;
+
+			if ($lassoContinue) {
+				lassoEnabled.set(true);
+			}
+		}
+
+		if ($isCutting) {
+			cutSegment(event);
+			$isCutting = false;
 		}
 	});
 
@@ -119,8 +132,60 @@
 		});
 	};
 
+	const cutSegment = (event: LassoHandlerFinishedEvent) => {
+		const coords = L.GeoJSON.latLngsToCoords(event.latLngs);
+
+		// // confirmation
+		// if (!confirm('部分除去を実行します。よろしいですか？')) {
+		//   // this.cutSegmentsDone();
+		//   return;
+		// }
+
+		const feature = $activeFeatureStoreArray[0];
+		if (!feature || !isSegmentFeature(feature)) return;
+
+		const poly = lineToPolygon(lineString(coords));
+		const split = lineSplit(feature.line, poly);
+
+		// remove original segment
+		featureStore.remove(feature.id);
+		activeSegment.reset();
+
+		// this is separated line by polygon
+		// remove inside polygon part, add outerside as new segment
+		if (split.features.length > 0) {
+			split.features.forEach((splitedPart, i) => {
+				if (!booleanWithin(lineSliceAlong(splitedPart, 1, 1, { units: 'meters' }), poly)) {
+					const random = nanoid();
+					const id = `${random}:segment`;
+
+					const apartSegment = splitedPart.geometry.coordinates;
+
+					const line = createLineFeature(id, apartSegment);
+					const start = createStartFeature(id, apartSegment);
+					const end = createEndFeature(id, apartSegment);
+
+					const segment = {
+						kind: 'SegmentFeature' as const,
+						id,
+						line,
+						start,
+						end
+					} satisfies SegmentFeature;
+
+					featureStore.add(id, segment);
+				}
+			});
+		}
+	};
+
 	$: {
 		console.log($lassoEnabled);
 		$lassoEnabled ? lasso.enable() : lasso.disable();
+	}
+
+	$: {
+		console.log($isCutting);
+		$isCutting ? lasso.enable() : lasso.disable();
 	}
 </script>

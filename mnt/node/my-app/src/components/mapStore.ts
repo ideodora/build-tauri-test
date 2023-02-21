@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
 export const sMap = writable<L.Map>();
 export const sps = writable<any[]>([]);
 export const segments = writable<any[]>([]);
+export const isCutting = writable<boolean>(false);
 export const lassoEnabled = writable<boolean>(false);
 export const lassoContinue = writable<boolean>(false);
 export const segmentsStore = writable<Map<string, any>>(new Map([]));

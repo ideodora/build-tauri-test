@@ -22,7 +22,8 @@
 		isExporting,
 		lassoContinue,
 		lassoEnabled,
-		sps
+		sps,
+		isCutting
 	} from '~/components/mapStore';
 
 	import {
@@ -195,7 +196,14 @@
 		<button class="btn" type="button" on:click={swapStartEnd}>
 			<Swap_vert tabindex="-1" />
 		</button>
-		<button class="btn" type="button" on:click={offSelect}>
+		<button
+			class="btn"
+			type="button"
+			class:!bg-indigo-200={$isCutting}
+			on:click={() => {
+				$isCutting = !$isCutting;
+			}}
+		>
 			<Content_cut class="outline-none" tabindex="-1" />
 		</button>
 	{/if}
