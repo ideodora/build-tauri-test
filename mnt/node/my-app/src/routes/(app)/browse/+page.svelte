@@ -76,7 +76,7 @@
 		<TreeMenu on:deleteWatershed={deleteWatershed} />
 	</div>
 	<div class="bg-slate-100">
-		<MapComponent on:ready={onMapReady} autoFocus={true}>
+		<MapComponent on:ready={onMapReady} autoFocus={true} selectable={false}>
 			<SegmentsProjection bind:this={segmentsProjection} />
 			<ZoneProjection bind:this={zoneProjection} />
 		</MapComponent>

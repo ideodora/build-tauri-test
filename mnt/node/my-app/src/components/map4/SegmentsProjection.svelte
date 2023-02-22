@@ -5,6 +5,7 @@
 	import { featureStoreArray, activeSegment, activeFeatureStoreArray } from './watershedStore';
 
 	const { getMap } = getContext<MapContext>(key);
+	const { selectable } = getContext<MapContext>(key);
 
 	const map = getMap();
 
@@ -33,9 +34,8 @@
 				});
 
 				layer.on('click', (e) => {
+					if (!selectable()) return;
 					const segmentId: string = feature.properties.id.split(':').slice(0, -1).join(':');
-					console.log('click segment id:', segmentId);
-
 					if (e.originalEvent.shiftKey) {
 						activeSegment.add(segmentId);
 					} else {

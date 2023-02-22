@@ -1,15 +1,8 @@
-- [-] prevent selecting while browsing
+- [-] fix zone bounds
 - [-] tidy feature store
-- [x] browse submenu separate segments and zones
-- [x] toggle visibility on submenu
+- [-] sync center when leaving browse
 - [ ] edit watershed attributes
 - [ ] duplicate watershed
-- [x] export visibles in browse
-- [x] add bounds focus in browse
-- [x] scroll sidebar in browse
-- [-] add warning when leaving edit
-- [x] reset active feature when leaving edit
-- [-] sync center when leaving browse
 - [ ] rename features in browse
 - [ ] reorder submenus
 - [ ] memo
@@ -19,3 +12,13 @@
 - [ ] tidy tool buttons
 - [ ] import segment
 - [ ] import zone
+- [x] add select/unselect all
+- [x] prevent selecting while browsing
+- [x] focus after river load
+- [x] browse submenu separate segments and zones
+- [x] toggle visibility on submenu
+- [x] export visibles in browse
+- [x] add bounds focus in browse
+- [x] scroll sidebar in browse
+- [x] add warning when leaving edit
+- [x] reset active feature when leaving edit

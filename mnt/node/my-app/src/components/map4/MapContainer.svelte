@@ -13,6 +13,13 @@
 	import ZoneController from '~/components/map4/ZoneController.svelte';
 	import ExportController from '~/components/map4/ExportController.svelte';
 	import SegmentController from '~/components/map4/SegmentController.svelte';
+	import {
+		activeSegment,
+		activeZone,
+		featureStoreArray,
+		isSegmentFeature,
+		isZoneFeature
+	} from '~/components/map4/watershedStore';
 	// import { isEditingZone } from '~/components/mapStore';
 
 	// let segmentsController: SegmentsController;
@@ -73,6 +80,35 @@
 	const onClickedSave = (ev: any) => {
 		exportController.saveActivesAs(ev.detail.fileName);
 	};
+
+	const onMapKeydown = (ev: any) => {
+		console.log(ev.detail.originalEvent);
+		const event = ev.detail.originalEvent;
+		if (event.metaKey && event.key === 'a') {
+			event.preventDefault();
+			selectAll();
+		}
+		if (event.shiftKey && event.metaKey && event.key === 'a') {
+			event.preventDefault();
+			unselectAll();
+		}
+	};
+
+	const selectAll = () => {
+		for (const feature of $featureStoreArray) {
+			if (isSegmentFeature(feature)) {
+				activeSegment.add(feature.id);
+			}
+			if (isZoneFeature(feature)) {
+				activeZone.add(feature.id);
+			}
+		}
+	};
+
+	const unselectAll = () => {
+		activeSegment.reset();
+		activeZone.reset();
+	};
 </script>
 
 <div class="relative h-full">
@@ -96,7 +132,7 @@
 		</div>
 	</div>
 	<div class="absolute inset-0 z-10">
-		<MapComponent autoFocus={false}>
+		<MapComponent autoFocus={false} on:mapKeydown={onMapKeydown}>
 			<StartingPointsController
 				bind:this={startingPointsController}
 				on:clickedPoint={onClickedStartingPoint}

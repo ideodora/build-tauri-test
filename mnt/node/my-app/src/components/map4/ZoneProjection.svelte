@@ -10,6 +10,7 @@
 	} from './watershedStore';
 
 	const { getMap } = getContext<MapContext>(key);
+	const { selectable } = getContext<MapContext>(key);
 
 	const map = getMap();
 
@@ -52,23 +53,19 @@
 				});
 			}
 			if (layer instanceof L.Polygon) {
-				console.log('instnace of zone');
 				layer.on('mouseover', () => {
-					console.log('mouseover');
 					layer.setStyle({
 						fillOpacity: 0.4
 					});
 				});
 				layer.on('mouseout', () => {
-					console.log('mouseout');
 					layer.setStyle({
 						fillOpacity: 0.3
 					});
 				});
 				layer.on('click', (e) => {
+					if (!selectable()) return;
 					const featureId: string = feature.properties.id;
-					console.log('click zone id:', featureId);
-
 					if (e.originalEvent.shiftKey) {
 						activeZone.add(featureId);
 					} else {
@@ -76,7 +73,6 @@
 					}
 				});
 			}
-			console.log(layer);
 		},
 		style: (feature) => {
 			if (!feature) {

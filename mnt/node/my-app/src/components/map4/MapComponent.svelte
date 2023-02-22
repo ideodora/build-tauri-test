@@ -9,9 +9,11 @@
 	let map: L.Map;
 
 	export let autoFocus: boolean = false;
+	export let selectable: boolean = true;
 
 	setContext(key, {
-		getMap: () => map
+		getMap: () => map,
+		selectable: () => selectable
 	});
 
 	onMount(async () => {
@@ -21,12 +23,18 @@
 		map.createPane('tempZone').style.zIndex = '250';
 		map.createPane('zone').style.zIndex = '350';
 		dispathcer('ready');
+
+		map.on('keydown', (ev) => {
+			dispathcer('mapKeydown', ev);
+		});
 	});
 
 	$: if ($focusBounds && map) {
-		// console.log($focusBounds.toBBoxString());
 		if (autoFocus) {
-			map.fitBounds($focusBounds);
+			let theBounds = $focusBounds;
+			setTimeout(() => {
+				map.fitBounds(theBounds);
+			}, 100);
 		}
 	}
 </script>

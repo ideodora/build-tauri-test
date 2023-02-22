@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { default as turfClone } from '@turf/clone';
 	import { nanoid } from 'nanoid';
-	import { endIcon, startIcon, L } from '~/components/map4/leaflet';
+	import { endIcon, startIcon, L, type MapContext, key } from '~/components/map4/leaflet';
 	import {
 		activeFeatureStoreArray,
 		activeSegment,
@@ -11,6 +11,11 @@
 	} from '~/components/map4/watershedStore';
 	import { loadCurve as _loadCurve, loadCurveByKey as _loadCurveByKey } from './loadCurve';
 	import { lineString, point as turfPoint } from '@turf/helpers';
+	import { getContext } from 'svelte';
+
+	const { getMap } = getContext<MapContext>(key);
+
+	const map = getMap();
 
 	export const swapStartEndSelecting = () => {
 		for (const feature of $activeFeatureStoreArray) {
@@ -27,8 +32,11 @@
 
 	export const loadCurveByKey = async (curveKey: any) => {
 		const curves = await _loadCurveByKey(curveKey);
-		console.log('curves', curves);
-		addSegmentsFromCoordinates(curves);
+		const segments = addSegmentsFromCoordinates(curves);
+		const lines = segments.map((segment) => segment.line);
+		const geoJson = L.geoJSON(lines);
+		const bounds = geoJson.getBounds();
+		map.fitBounds(bounds);
 	};
 
 	const swapStartEnd = (feature: SegmentFeature) => {
@@ -70,9 +78,9 @@
 	};
 
 	const addSegmentsFromCoordinates = (curves: any[]) => {
-		for (const curve of curves) {
-			addSegmentFromCoordinates(curve);
-		}
+		return curves.map((curve) => {
+			return addSegmentFromCoordinates(curve);
+		});
 	};
 
 	const addSegmentFromCoordinates = (curve: any) => {
@@ -92,6 +100,7 @@
 		} satisfies SegmentFeature;
 
 		featureStore.add(id, segment);
+		return segment;
 	};
 
 	const createLineFeature = (id: string, coordinates: GeoJSON.Position[]) => {

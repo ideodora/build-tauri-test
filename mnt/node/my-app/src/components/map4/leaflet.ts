@@ -71,6 +71,7 @@ function setTileToMap(map: L.Map): void {
 
 export type MapContext = {
 	getMap: () => L.Map;
+	selectable: () => boolean;
 };
 
 export { L };

@@ -19,12 +19,13 @@ export const zonesBounds = writable<L.LatLngBounds | undefined>();
 export const focusBounds = derived(
 	[segmentsBounds, zonesBounds],
 	([$segmentsBounds, $zonesBounds]) => {
+		debugger;
 		if (!$segmentsBounds && !$zonesBounds) {
 			return;
 		}
 
 		if ($segmentsBounds && $zonesBounds) {
-			return $segmentsBounds.extend($segmentsBounds);
+			return $segmentsBounds.extend($zonesBounds);
 		}
 
 		return $segmentsBounds ? $segmentsBounds : $zonesBounds;
