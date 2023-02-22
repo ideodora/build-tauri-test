@@ -26,13 +26,15 @@
 
 	// TODO: loadRiver;
 
+	const onLoadRiverKeydown = async (event: KeyboardEvent, candidate: any) => {
+		if (event.key === 'Enter') {
+			await loadRiver(candidate);
+		}
+	};
 	const loadRiver = async (candidate: any) => {
-		console.log(candidate);
-
 		const curveKey = { name: candidate.river_name, river_code: candidate.river_code };
-
 		dispatch('clickedSearchRiver', { curveKey });
-
+		visible = false;
 		return;
 
 		// 	const { pid, prefCode } = event.detail.feature.properties;
@@ -76,12 +78,15 @@
 		<ul class="max-h-64 overflow-auto py-2">
 			{#each candidates as candidate}
 				<li>
-					<a
-						href="/"
+					<div
+						role="button"
 						class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100"
 						on:click={() => loadRiver(candidate)}
-						>{candidate.river_name}:{candidate.river_code} ({candidate.prefecture_name})</a
+						on:keydown={(ev) => onLoadRiverKeydown(ev, candidate)}
+						tabindex="-1"
 					>
+						{candidate.river_name}:{candidate.river_code} ({candidate.prefecture_name})
+					</div>
 				</li>
 			{/each}
 		</ul>
