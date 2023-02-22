@@ -56,6 +56,54 @@ export type ZoneFeature = {
 export const segmentVisibility = writable(true);
 export const zoneVisibility = writable(true);
 
+function createSegmentVisibilityFilter() {
+	const { subscribe, set, update } = writable(new Set<string>([]));
+
+	return {
+		subscribe,
+		add: (key: string) => update((n) => new Set(n.add(key))),
+		remove: (key: string) =>
+			update((n) => {
+				n.delete(key);
+				return new Set(n);
+			}),
+		toggle: (key: string) =>
+			update((n) => {
+				if (n.has(key)) {
+					n.delete(key);
+					return new Set(n);
+				}
+				return new Set(n.add(key));
+			}),
+		reset: () => set(new Set<string>([]))
+	};
+}
+export const segmentVisibilityFilter = createSegmentVisibilityFilter();
+
+function createZoneVisibilityFilter() {
+	const { subscribe, set, update } = writable(new Set<string>([]));
+
+	return {
+		subscribe,
+		add: (key: string) => update((n) => new Set(n.add(key))),
+		remove: (key: string) =>
+			update((n) => {
+				n.delete(key);
+				return new Set(n);
+			}),
+		toggle: (key: string) =>
+			update((n) => {
+				if (n.has(key)) {
+					n.delete(key);
+					return new Set(n);
+				}
+				return new Set(n.add(key));
+			}),
+		reset: () => set(new Set<string>([]))
+	};
+}
+export const zoneVisibilityFilter = createZoneVisibilityFilter();
+
 function createFeatureStore() {
 	const { subscribe, set, update } = writable(new Map<string, Feature>([]));
 
@@ -135,12 +183,30 @@ export const activeFeature = derived(
 );
 
 export const featureStoreArray = derived(
-	[featureStore, segmentVisibility, zoneVisibility, activeSegment, activeZone],
-	([$featureStore, $segmentVisibility, $zoneVisibility, $activeSegment, $activeZone]) => {
+	[
+		featureStore,
+		segmentVisibility,
+		zoneVisibility,
+		activeSegment,
+		activeZone,
+		segmentVisibilityFilter,
+		zoneVisibilityFilter
+	],
+	([
+		$featureStore,
+		$segmentVisibility,
+		$zoneVisibility,
+		$activeSegment,
+		$activeZone,
+		$segmentVisibilityFilter,
+		$zoneVisibilityFilter
+	]) => {
 		const filtered: Feature[] = [];
 		for (const [key, feature] of $featureStore) {
 			if ($activeSegment.has(key)) continue;
 			if ($activeZone.has(key)) continue;
+			if ($segmentVisibilityFilter.has(key)) continue;
+			if ($zoneVisibilityFilter.has(key)) continue;
 			if ($segmentVisibility && feature.kind === 'SegmentFeature') {
 				filtered.push(feature);
 			}

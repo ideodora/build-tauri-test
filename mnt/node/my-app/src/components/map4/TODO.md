@@ -1,3 +1,19 @@
-- delete saved watershed
-- tidy LassoController, LineDrawer, SegmentController create segment
-- add rectangle select
+- [x] browse submenu separate segments and zones
+- [x] toggle visibility on submenu
+- [ ] edit watershed attributes
+- [ ] duplicate watershed
+- [x] export visibles in browse
+- [x] add bounds focus in browse
+- [x] scroll sidebar in browse
+- [-] add warning when leaving edit
+- [-] reset active feature when leaving edit
+- [-] sync center when leaving browse
+- [ ] rename features in browse
+- [ ] reorder submenus
+- [ ] memo
+- [ ] tidy LassoController, LineDrawer, SegmentController create segment
+- [ ] add rectangle select
+- [ ] merge zone
+- [ ] tidy tool buttons
+- [ ] import segment
+- [ ] import zone

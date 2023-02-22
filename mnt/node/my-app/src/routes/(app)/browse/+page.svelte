@@ -7,9 +7,13 @@
 	import TreeMenu from '~/components/tree-menu/index.svelte';
 
 	import { featureStore } from '~/components/map4/watershedStore';
-	import { activeWatershed, watershedStore } from '~/routes/(app)/browse/store';
+	import { activeWatershed, watershedStore, watershedStore2 } from '~/routes/(app)/browse/store';
 	import { onMount } from 'svelte';
 	import { activeWatershedId } from '~/components/tree-menu/store';
+	import { focusBounds } from '~/components/mapStore';
+
+	let segmentsProjection: SegmentsProjection;
+	let zoneProjection: ZoneProjection;
 
 	onMount(() => {
 		featureStore.reset();
@@ -45,17 +49,22 @@
 		for (const child of children) {
 			featureStore.add(child.key, child.data);
 		}
+
+		// const segmentBounds = segmentsProjection.getBounds();
+		// const zoneBounds = zoneProjection.getBounds();
+		// const bounds = segmentBounds.extend(zoneBounds);
+		// $focusBounds = bounds;
 	}
 </script>
 
-<div class="grid grid-cols-[25ch,_1fr]">
-	<div class="border-r bg-neutral-100">
+<div class="grid h-full grid-cols-[25ch,_1fr] overflow-hidden">
+	<div class="overflow-auto border-r bg-neutral-100">
 		<TreeMenu on:deleteWatershed={deleteWatershed} />
 	</div>
 	<div class="bg-slate-100">
-		<MapComponent on:ready={onMapReady}>
-			<SegmentsProjection />
-			<ZoneProjection />
+		<MapComponent on:ready={onMapReady} autoFocus={true}>
+			<SegmentsProjection bind:this={segmentsProjection} />
+			<ZoneProjection bind:this={zoneProjection} />
 		</MapComponent>
 	</div>
 </div>

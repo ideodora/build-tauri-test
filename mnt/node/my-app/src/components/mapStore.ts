@@ -1,5 +1,5 @@
 import type L from 'leaflet';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 
 export const sMap = writable<L.Map>();
 export const sps = writable<any[]>([]);
@@ -13,6 +13,23 @@ export const drawingEnabled = writable<boolean>(false);
 export const isComposingZone = writable<boolean>(false);
 export const isEditingZone = writable<boolean>(false);
 export const isExporting = writable<boolean>(false);
+
+export const segmentsBounds = writable<L.LatLngBounds | undefined>();
+export const zonesBounds = writable<L.LatLngBounds | undefined>();
+export const focusBounds = derived(
+	[segmentsBounds, zonesBounds],
+	([$segmentsBounds, $zonesBounds]) => {
+		if (!$segmentsBounds && !$zonesBounds) {
+			return;
+		}
+
+		if ($segmentsBounds && $zonesBounds) {
+			return $segmentsBounds.extend($segmentsBounds);
+		}
+
+		return $segmentsBounds ? $segmentsBounds : $zonesBounds;
+	}
+);
 
 function createSegmentStore() {
 	const { subscribe, set, update } = writable(new Map<string, any>([]));

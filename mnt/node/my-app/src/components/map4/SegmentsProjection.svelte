@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { endIcon, key, L, startIcon, type MapContext } from '~/components/map4/leaflet';
+	import { segmentsBounds } from '~/components/mapStore';
 	import { featureStoreArray, activeSegment, activeFeatureStoreArray } from './watershedStore';
 
 	const { getMap } = getContext<MapContext>(key);
@@ -74,6 +75,10 @@
 		}
 	};
 	controller.addTo(map);
+
+	export const getBounds = () => {
+		return controller.getBounds();
+	};
 
 	const activeController = L.geoJson();
 	activeController.options = {
@@ -153,6 +158,11 @@
 				controller.addData(feature.start);
 				controller.addData(feature.end);
 			}
+		}
+
+		if ($featureStoreArray.length > 0) {
+			const bounds = controller.getBounds();
+			$segmentsBounds = bounds;
 		}
 	}
 

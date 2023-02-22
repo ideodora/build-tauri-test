@@ -96,7 +96,7 @@
 		</div>
 	</div>
 	<div class="absolute inset-0 z-10">
-		<MapComponent>
+		<MapComponent autoFocus={false}>
 			<StartingPointsController
 				bind:this={startingPointsController}
 				on:clickedPoint={onClickedStartingPoint}

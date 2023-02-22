@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { key, L, type MapContext } from '~/components/map4/leaflet';
-	import { asgstr, sgstr, isEditingZone } from '~/components/mapStore';
+	import { asgstr, sgstr, isEditingZone, zonesBounds } from '~/components/mapStore';
 	import {
 		activeZone,
 		featureStoreArray,
@@ -91,6 +91,10 @@
 		}
 	};
 	controller.addTo(map);
+
+	export const getBounds = () => {
+		return controller.getBounds();
+	};
 
 	const activeController = L.geoJson();
 	activeController.options = {
@@ -200,6 +204,11 @@
 			if (feature.kind === 'ZoneFeature') {
 				controller.addData(feature.zone);
 			}
+		}
+
+		if ($featureStoreArray.length > 0) {
+			const bounds = controller.getBounds();
+			$zonesBounds = bounds;
 		}
 	}
 
