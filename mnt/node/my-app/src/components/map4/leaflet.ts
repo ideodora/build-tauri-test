@@ -2,6 +2,8 @@ import L from 'leaflet';
 import 'leaflet-lasso';
 import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
+import 'leaflet.gridlayer.googlemutant/dist/Leaflet.GoogleMutant';
+import { Loader as GoogleMapApiLoader } from '@googlemaps/js-api-loader';
 
 import iconRetinaUrl from '~/assets/marker-icon-2x.png';
 import iconUrl from '~/assets/marker-icon.png';
@@ -9,26 +11,63 @@ import shadowUrl from '~/assets/marker-shadow.png';
 
 export type { LassoHandlerFinishedEvent } from 'leaflet-lasso';
 
+declare global {
+	namespace L {
+		namespace gridLayer {
+			function googleMutant(options: any): any;
+		}
+	}
+}
+
+const USE_GOOGLEMAP_TILE = import.meta.env.VITE_USE_GOOGLEMAP_TILE ?? 'no';
+const GOOGLEMAP_API_KEY = import.meta.env.VITE_GOOGLEMAP_API_KEY ?? '';
+
 export const key = Symbol();
 
-export const createMap = (element: HTMLElement) => {
-	const tile = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+export const createMap = async (element: HTMLElement) => {
+	if (USE_GOOGLEMAP_TILE === 'yes') {
+		const googleMapApiLoader = new GoogleMapApiLoader({
+			apiKey: GOOGLEMAP_API_KEY,
+			version: 'weekly'
+		});
+		await googleMapApiLoader.load();
+	}
+
 	const map = L.map(element, {
 		// preferCanvas: true,
+		maxZoom: 20,
 		zoomControl: false,
 		doubleClickZoom: false,
 		markerZoomAnimation: false
 		// zoomAnimation: false,
 		// fadeAnimation: false
 	}).setView([35.132454, 136.978166], 13);
+
+	setTileToMap(map);
+
+	return map;
+};
+
+function setTileToMap(map: L.Map): void {
+	if (USE_GOOGLEMAP_TILE === 'yes') {
+		L.gridLayer
+			.googleMutant({
+				type: 'roadmap'
+				// styles: [
+				//   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+				// ],
+			})
+			.addTo(map);
+		return;
+	}
+
+	const tile = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 	L.tileLayer(tile, {
 		attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
 	        &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
 		subdomains: 'abcd'
 	}).addTo(map);
-
-	return map;
-};
+}
 
 export type MapContext = {
 	getMap: () => L.Map;

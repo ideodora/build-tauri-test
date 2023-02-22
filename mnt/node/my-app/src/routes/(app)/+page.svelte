@@ -1,10 +1,9 @@
 <script lang="ts">
-	// import MapContainer from '~/components/map3/MapContainer.svelte';
 	import MapContainer from '~/components/map4/MapContainer.svelte';
 	import ImportModal from '~/components/initial-import/ImportModal.svelte';
 	import { beforeNavigate, goto } from '$app/navigation';
-	import type { BeforeNavigate } from '@sveltejs/kit';
 	import { confirm } from '@tauri-apps/api/dialog';
+	import { activeSegment, activeZone } from '~/components/map4/watershedStore';
 
 	let left = false;
 
@@ -19,6 +18,8 @@
 
 			if (confirmed) {
 				left = true;
+				$activeSegment.clear();
+				$activeZone.clear();
 				if (to) {
 					goto(to.url);
 				}

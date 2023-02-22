@@ -1,16 +1,30 @@
 <script lang="ts">
-	import { invoke } from '@tauri-apps/api/tauri';
+	import { beforeNavigate } from '$app/navigation';
 	import { confirm } from '@tauri-apps/api/dialog';
+	import { invoke } from '@tauri-apps/api/tauri';
 	import MapComponent from '~/components/map4/MapComponent.svelte';
 	import SegmentsProjection from '~/components/map4/SegmentsProjection.svelte';
 	import ZoneProjection from '~/components/map4/ZoneProjection.svelte';
 	import TreeMenu from '~/components/tree-menu/index.svelte';
 
-	import { featureStore } from '~/components/map4/watershedStore';
-	import { activeWatershed, watershedStore, watershedStore2 } from '~/routes/(app)/browse/store';
 	import { onMount } from 'svelte';
+	import {
+		featureStore,
+		segmentVisibility,
+		segmentVisibilityFilter,
+		zoneVisibility,
+		zoneVisibilityFilter
+	} from '~/components/map4/watershedStore';
 	import { activeWatershedId } from '~/components/tree-menu/store';
-	import { focusBounds } from '~/components/mapStore';
+	import { activeWatershed, watershedStore } from '~/routes/(app)/browse/store';
+
+	beforeNavigate(() => {
+		activeWatershedId.reset();
+		$segmentVisibility = true;
+		$zoneVisibility = true;
+		segmentVisibilityFilter.reset();
+		zoneVisibilityFilter.reset();
+	});
 
 	let segmentsProjection: SegmentsProjection;
 	let zoneProjection: ZoneProjection;

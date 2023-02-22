@@ -14,8 +14,8 @@
 		getMap: () => map
 	});
 
-	onMount(() => {
-		map = createMap(element);
+	onMount(async () => {
+		map = await createMap(element);
 
 		// for zone layer zindex
 		map.createPane('tempZone').style.zIndex = '250';
