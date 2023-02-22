@@ -206,7 +206,7 @@
 			}
 		}
 
-		if ($featureStoreArray.length > 0) {
+		if (controller.getLayers().length > 0) {
 			const bounds = controller.getBounds();
 			$zonesBounds = bounds;
 		}

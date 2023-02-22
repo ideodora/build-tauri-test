@@ -1,3 +1,4 @@
+- [-] tidy feature store
 - [x] browse submenu separate segments and zones
 - [x] toggle visibility on submenu
 - [ ] edit watershed attributes
