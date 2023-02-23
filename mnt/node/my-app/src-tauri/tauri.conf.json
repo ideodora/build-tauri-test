@@ -4,8 +4,8 @@
 		"distDir": "../build"
 	},
 	"package": {
-		"productName": "river-manager",
-		"version": "1.0.1"
+		"productName": "River Manager v3",
+		"version": "1.0.2"
 	},
 	"tauri": {
 		"allowlist": {
