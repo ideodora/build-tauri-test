@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount, setContext } from 'svelte';
 	import { L, key, createMap } from '~/components/map4/leaflet';
-	import { focusBounds } from '~/components/mapStore';
+	import { focusBounds, syncCenter } from '~/components/mapStore';
 
 	const dispathcer = createEventDispatcher();
 
 	let element: HTMLDivElement;
 	let map: L.Map;
-
+  
 	export let autoFocus: boolean = false;
 	export let selectable: boolean = true;
+  export let defaultCenter: L.LatLngExpression|undefined = undefined;
 
 	setContext(key, {
 		getMap: () => map,
@@ -17,7 +18,7 @@
 	});
 
 	onMount(async () => {
-		map = await createMap(element);
+		map = await createMap(element, defaultCenter);
 
 		// for zone layer zindex
 		map.createPane('tempZone').style.zIndex = '250';
@@ -29,12 +30,10 @@
 		});
 	});
 
-	$: if ($focusBounds && map) {
-		if (autoFocus) {
-			let theBounds = $focusBounds;
-			setTimeout(() => {
-				map.fitBounds(theBounds);
-			}, 100);
+	$: if ($focusBounds) {
+		if (map && autoFocus) {
+      map.fitBounds($focusBounds);
+      $syncCenter = map.getCenter();
 		}
 	}
 </script>

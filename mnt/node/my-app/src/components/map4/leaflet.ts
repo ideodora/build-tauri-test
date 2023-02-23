@@ -24,7 +24,7 @@ const GOOGLEMAP_API_KEY = import.meta.env.VITE_GOOGLEMAP_API_KEY ?? '';
 
 export const key = Symbol();
 
-export const createMap = async (element: HTMLElement) => {
+export const createMap = async (element: HTMLElement, center?: L.LatLngExpression) => {
 	if (USE_GOOGLEMAP_TILE === 'yes') {
 		const googleMapApiLoader = new GoogleMapApiLoader({
 			apiKey: GOOGLEMAP_API_KEY,
@@ -41,7 +41,7 @@ export const createMap = async (element: HTMLElement) => {
 		markerZoomAnimation: false
 		// zoomAnimation: false,
 		// fadeAnimation: false
-	}).setView([35.132454, 136.978166], 13);
+	}).setView(center ?? [35.132454, 136.978166], 13);
 
 	setTileToMap(map);
 

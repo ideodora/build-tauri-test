@@ -13,6 +13,7 @@ export const drawingEnabled = writable<boolean>(false);
 export const isComposingZone = writable<boolean>(false);
 export const isEditingZone = writable<boolean>(false);
 export const isExporting = writable<boolean>(false);
+export const syncCenter = writable<L.LatLng>();
 
 export const segmentsBounds = writable<L.LatLngBounds | undefined>();
 export const zonesBounds = writable<L.LatLngBounds | undefined>();
