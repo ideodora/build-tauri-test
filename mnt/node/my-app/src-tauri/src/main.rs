@@ -56,7 +56,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             handlers::save_export::save_export,
             handlers::create_watershed::create_watershed,
             handlers::watersheds::watersheds,
-            handlers::delete_watershed::delete_watershed
+            handlers::delete_watershed::delete_watershed,
+            handlers::update_watershed::update_watershed,
+            handlers::update_watershed_item::update_watershed_item
         ])
         // ハンドラからコネクションプールにアクセスできるよう、登録する
         .setup(|app| {

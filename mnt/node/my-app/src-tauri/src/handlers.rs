@@ -14,6 +14,8 @@ pub mod curves;
 pub mod delete_watershed;
 pub mod get_curves;
 pub mod save_export;
+pub mod update_watershed;
+pub mod update_watershed_item;
 pub mod watersheds;
 
 #[derive(Debug, Serialize, Deserialize)]

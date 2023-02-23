@@ -19,15 +19,24 @@ pub struct DbResultWatershed {
     pub item_id: u32,
     pub item_key: String,
     pub item_data: String,
+    pub item_name: Option<String>,
 }
 impl DbResultWatershed {
-    pub fn new(id: u32, name: &str, item_id: u32, item_key: &str, item_data: &str) -> Self {
+    pub fn new(
+        id: u32,
+        name: &str,
+        item_id: u32,
+        item_key: &str,
+        item_data: &str,
+        item_name: Option<&str>,
+    ) -> Self {
         DbResultWatershed {
             id,
             name: name.to_string(),
             item_id,
             item_key: item_key.to_string(),
             item_data: item_data.to_string(),
+            item_name: item_name.map(str::to_string),
         }
     }
 }
@@ -50,15 +59,25 @@ impl TheParent {
 #[derive(Debug, Serialize, Deserialize)]
 struct TheChild {
     pub id: u32,
+    pub watershed_id: u32,
     pub key: String,
     pub data: String,
+    pub name: Option<String>,
 }
 impl TheChild {
-    pub fn new(id: u32, key: &String, data: &String) -> Self {
+    pub fn new(
+        id: u32,
+        watershed_id: u32,
+        key: &String,
+        data: &String,
+        name: &Option<String>,
+    ) -> Self {
         TheChild {
             id,
+            watershed_id,
             key: key.clone(),
             data: data.clone(),
+            name: name.clone(),
         }
     }
 }
@@ -74,7 +93,7 @@ pub(crate) async fn watersheds(
 
     let folded = _results.iter().fold(BTreeMap::new(), |mut acc, v| {
         let parent = acc.entry(v.id).or_insert(TheParent::new(v.id, &v.name));
-        let child = TheChild::new(v.item_id, &v.item_key, &v.item_data);
+        let child = TheChild::new(v.item_id, v.id, &v.item_key, &v.item_data, &v.item_name);
         parent.children.push(child);
         acc
     });

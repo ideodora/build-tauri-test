@@ -12,6 +12,7 @@ use tauri::AppHandle;
 
 use crate::handlers::{
     create_watershed::CreateBody, curves::CurveId, get_curves::CurveKey,
+    update_watershed::UpdateWatershedRequest, update_watershed_item::UpdateWatershedItemRequest,
     watersheds::DbResultWatershed, Bounds, Curve, Point, RiverCandidate,
 };
 
@@ -401,7 +402,8 @@ pub async fn watersheds(pool: &SqlitePool) -> DbResult<Vec<DbResultWatershed>> {
         watersheds.*,
         item.id AS item__id,
         item.`key` AS item__key,
-        item.data AS item__data
+        item.data AS item__data,
+        item.name AS item__name
       FROM
         watersheds
         LEFT JOIN watershed_items AS item ON item.watershed_id = watersheds.id
@@ -433,9 +435,10 @@ pub async fn watersheds(pool: &SqlitePool) -> DbResult<Vec<DbResultWatershed>> {
         let item_id: u32 = row.try_get("item__id").unwrap();
         let item_key: &str = row.try_get("item__key").unwrap();
         let item_data: &str = row.try_get("item__data").unwrap();
+        let item_name: Option<&str> = row.try_get("item__name").ok();
         columns.insert(
             i,
-            DbResultWatershed::new(id, &name, item_id, &item_key, &item_data),
+            DbResultWatershed::new(id, &name, item_id, &item_key, &item_data, item_name),
         );
     }
 
@@ -466,6 +469,64 @@ pub async fn delete_watershed(pool: &SqlitePool, id: &u32) {
         Err(e) => {
             println!("{:#?}", e);
             panic!("delete error");
+        }
+    }
+}
+
+pub async fn update_watershed(pool: &SqlitePool, payload: &UpdateWatershedRequest) {
+    println!("database::update_watershed");
+
+    const SQL1: &str = "
+    -- SQLite
+    UPDATE watersheds
+    SET name = ?
+    WHERE
+      id = ?
+    ;
+  ";
+
+    let row = sqlx::query(SQL1)
+        .bind(&payload.name)
+        .bind(&payload.id)
+        .execute(pool)
+        .await;
+
+    match row {
+        Ok(_row) => {
+            println!("update success");
+        }
+        Err(e) => {
+            println!("{:#?}", e);
+            panic!("update error");
+        }
+    }
+}
+
+pub async fn update_watershed_item(pool: &SqlitePool, payload: &UpdateWatershedItemRequest) {
+    println!("database::update_watershed_item");
+
+    const SQL1: &str = "
+    -- SQLite
+    UPDATE watershed_items
+    SET name = ?
+    WHERE
+      id = ?
+    ;
+  ";
+
+    let row = sqlx::query(SQL1)
+        .bind(&payload.name)
+        .bind(&payload.id)
+        .execute(pool)
+        .await;
+
+    match row {
+        Ok(_row) => {
+            println!("update success");
+        }
+        Err(e) => {
+            println!("{:#?}", e);
+            panic!("update error");
         }
     }
 }

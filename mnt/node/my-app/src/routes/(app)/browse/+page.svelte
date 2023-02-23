@@ -5,7 +5,7 @@
 	import MapComponent from '~/components/map4/MapComponent.svelte';
 	import SegmentsProjection from '~/components/map4/SegmentsProjection.svelte';
 	import ZoneProjection from '~/components/map4/ZoneProjection.svelte';
-	import TreeMenu from '~/components/tree-menu/index.svelte';
+	import WatershedMenu from '~/components/watershed-menu/index.svelte';
 
 	import { onMount } from 'svelte';
 	import {
@@ -15,8 +15,18 @@
 		zoneVisibility,
 		zoneVisibilityFilter
 	} from '~/components/map4/watershedStore';
-	import { activeWatershedId } from '~/components/tree-menu/store';
-	import { activeWatershed, watershedStore } from '~/routes/(app)/browse/store';
+	import { activeWatershedId } from '~/components/watershed-menu/store';
+	import {
+		activeWatershed,
+		watershedStore,
+		offscreen,
+		editSegment,
+		editZone
+	} from '~/routes/(app)/browse/store';
+	import { fly } from 'svelte/transition';
+	import EditWatershedPanel from '~/components/edit-watershed-panel/index.svelte';
+	import EditZonePanel from '~/components/edit-zone-panel/index.svelte';
+	import EditSegmentPanel from '~/components/edit-segment-panel/index.svelte';
 
 	beforeNavigate(() => {
 		activeWatershedId.reset();
@@ -38,7 +48,7 @@
 		$watershedStore = res.watersheds ?? [];
 	};
 
-	const deleteWatershed = async () => {
+	const onDeleteWatershed = async () => {
 		const confirmed = await confirm('この作業は元に戻せません', {
 			title: '本当に削除してよろしいですか',
 			type: 'warning'
@@ -53,7 +63,13 @@
 		activeWatershedId.reset();
 	};
 
+	const onEditWatershed = async () => {
+		console.log('edit watershed');
+		$offscreen = !$offscreen;
+	};
+
 	$: if ($activeWatershed) {
+		$offscreen = false;
 		const children = $activeWatershed.children.map((child: any) => {
 			return { ...child, data: JSON.parse(child.data) };
 		});
@@ -71,9 +87,9 @@
 	}
 </script>
 
-<div class="grid h-full grid-cols-[25ch,_1fr] overflow-hidden">
+<div class="relative grid h-full grid-cols-[25ch,_1fr] overflow-hidden">
 	<div class="overflow-auto border-r bg-neutral-100">
-		<TreeMenu on:deleteWatershed={deleteWatershed} />
+		<WatershedMenu on:deleteWatershed={onDeleteWatershed} on:editWatershed={onEditWatershed} />
 	</div>
 	<div class="bg-slate-100">
 		<MapComponent on:ready={onMapReady} autoFocus={true} selectable={false}>
@@ -81,4 +97,28 @@
 			<ZoneProjection bind:this={zoneProjection} />
 		</MapComponent>
 	</div>
+	{#if $offscreen}
+		<div
+			class="absolute right-0 z-[1000] block h-full w-80 border-l border-gray-300 bg-gray-50"
+			transition:fly|local={{ x: 320, duration: 100 }}
+		>
+			<EditWatershedPanel />
+		</div>
+	{/if}
+	{#if $editSegment}
+		<div
+			class="absolute right-0 z-[1000] block h-full w-80 border-l border-gray-300 bg-gray-50"
+			transition:fly|local={{ x: 320, duration: 100 }}
+		>
+			<EditSegmentPanel />
+		</div>
+	{/if}
+	{#if $editZone}
+		<div
+			class="absolute right-0 z-[1000] block h-full w-80 border-l border-gray-300 bg-gray-50"
+			transition:fly|local={{ x: 320, duration: 100 }}
+		>
+			<EditZonePanel />
+		</div>
+	{/if}
 </div>

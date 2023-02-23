@@ -1,6 +1,6 @@
 import { writable, get, derived } from 'svelte/store';
 
-import { activeWatershedId } from '~/components/tree-menu/store';
+import { activeWatershedId } from '~/components/watershed-menu/store';
 
 export const watershedStore = writable<any[]>([]);
 
@@ -26,3 +26,8 @@ export const activeWatershed = derived(
 		return $watershedStore.find((watershed) => watershed.id === $activeWatershedId);
 	}
 );
+
+export const offscreen = writable<boolean>(false);
+
+export const editSegment = writable<any>();
+export const editZone = writable<any>();
