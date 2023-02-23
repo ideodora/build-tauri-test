@@ -88,10 +88,6 @@
 	};
 	controller.addTo(map);
 
-	export const getBounds = () => {
-		return controller.getBounds();
-	};
-
 	const activeController = L.geoJson();
 	activeController.options = {
 		onEachFeature: (feature, layer) => {
@@ -195,16 +191,16 @@
 
 	$: if ($featureStoreArray) {
 		controller.clearLayers();
+    $zonesBounds = undefined;
 
 		for (const feature of $featureStoreArray) {
-			if (feature.kind === 'ZoneFeature') {
+			if (isZoneFeature(feature)) {
 				controller.addData(feature.zone);
 			}
 		}
 
 		if (controller.getLayers().length > 0) {
-			const bounds = controller.getBounds();
-			$zonesBounds = bounds;
+			$zonesBounds = controller.getBounds();
 		}
 	}
 

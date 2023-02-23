@@ -17,18 +17,19 @@ export const isExporting = writable<boolean>(false);
 export const segmentsBounds = writable<L.LatLngBounds | undefined>();
 export const zonesBounds = writable<L.LatLngBounds | undefined>();
 export const focusBounds = derived(
-	[segmentsBounds, zonesBounds],
-	([$segmentsBounds, $zonesBounds]) => {
-		debugger;
-		if (!$segmentsBounds && !$zonesBounds) {
-			return;
-		}
+  [segmentsBounds, zonesBounds],
+  ([$segmentsBounds, $zonesBounds]) => {
+    if (!$segmentsBounds && !$zonesBounds) {
+      return undefined;
+    }
 
-		if ($segmentsBounds && $zonesBounds) {
-			return $segmentsBounds.extend($zonesBounds);
-		}
+    if ($segmentsBounds && $zonesBounds) {
+      // extend is side effect so clone first by pad0 = same bounds
+      const clone = $segmentsBounds.pad(0);
+      return clone.extend($zonesBounds);
+    }
 
-		return $segmentsBounds ? $segmentsBounds : $zonesBounds;
+    return $segmentsBounds ? $segmentsBounds : $zonesBounds;
 	}
 );
 

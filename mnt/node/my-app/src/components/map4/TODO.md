@@ -1,4 +1,4 @@
-- [-] fix zone bounds
+- [x] fix zone bounds
 - [-] tidy feature store
 - [-] sync center when leaving browse
 - [ ] edit watershed attributes

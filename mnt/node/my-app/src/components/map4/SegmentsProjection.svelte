@@ -2,7 +2,7 @@
 	import { getContext } from 'svelte';
 	import { endIcon, key, L, startIcon, type MapContext } from '~/components/map4/leaflet';
 	import { segmentsBounds } from '~/components/mapStore';
-	import { featureStoreArray, activeSegment, activeFeatureStoreArray } from './watershedStore';
+	import { featureStoreArray, activeSegment, activeFeatureStoreArray, isSegmentFeature } from './watershedStore';
 
 	const { getMap } = getContext<MapContext>(key);
 	const { selectable } = getContext<MapContext>(key);
@@ -55,13 +55,6 @@
 						color: feature.properties.color,
 						weight: feature.properties.weight
 					};
-				case 'SegmentZone':
-					return {
-						color: feature.properties.color,
-						weight: feature.properties.weight,
-						fillOpacity: feature.properties.fillOpacity,
-						pane: 'zone'
-					};
 				default:
 					return {};
 			}
@@ -75,10 +68,6 @@
 		}
 	};
 	controller.addTo(map);
-
-	export const getBounds = () => {
-		return controller.getBounds();
-	};
 
 	const activeController = L.geoJson();
 	activeController.options = {
@@ -149,9 +138,10 @@
 
 	$: if ($featureStoreArray) {
 		controller.clearLayers();
+    $segmentsBounds = undefined;
 
 		for (const feature of $featureStoreArray) {
-			if (feature.kind === 'SegmentFeature') {
+			if (isSegmentFeature(feature)) {
 				feature.start.properties.icon = startIcon();
 				feature.end.properties.icon = endIcon();
 				controller.addData(feature.line);
@@ -161,8 +151,7 @@
 		}
 
 		if (controller.getLayers().length > 0) {
-			const bounds = controller.getBounds();
-			$segmentsBounds = bounds;
+			$segmentsBounds = controller.getBounds();
 		}
 	}
 
