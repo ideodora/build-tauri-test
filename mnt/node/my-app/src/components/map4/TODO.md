@@ -1,12 +1,13 @@
 - [x] fix zone bounds
 - [-] tidy feature store
 - [x] sync center when leaving browse
-- [ ] edit watershed attributes
+- [-] edit watershed attributes
 - [ ] duplicate watershed
-- [ ] rename features in browse
+- [x] rename features in browse
 - [ ] reorder submenus
 - [ ] memo
-- [ ] tidy LassoController, LineDrawer, SegmentController create segment
+- [x] tidy LassoController, LineDrawer, SegmentController create segment
+- [ ] optimize way to create segment in feature.ts
 - [ ] add rectangle select
 - [ ] merge zone
 - [ ] tidy tool buttons

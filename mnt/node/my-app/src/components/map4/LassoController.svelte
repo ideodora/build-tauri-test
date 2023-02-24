@@ -1,10 +1,20 @@
 <script lang="ts">
+	import booleanWithin from '@turf/boolean-within';
+	import { lineString } from '@turf/helpers';
+	import lineSliceAlong from '@turf/line-slice-along';
+	import lineSplit from '@turf/line-split';
+	import lineToPolygon from '@turf/line-to-polygon';
 	import L from 'leaflet';
 	import 'leaflet-lasso';
-	import { lassoEnabled, lassoContinue, isCutting } from '~/components/mapStore';
 	import { FINISHED_EVENT, type LassoHandlerFinishedEvent } from 'leaflet-lasso';
+	import { nanoid } from 'nanoid';
 	import { getContext } from 'svelte';
-	import { endIcon, startIcon, key, type MapContext } from '~/components/map4/leaflet';
+	import {
+		createEndFeature,
+		createLineFeature,
+		createStartFeature
+	} from '~/components/map4/feature';
+	import { key, type MapContext } from '~/components/map4/leaflet';
 	import {
 		activeFeatureStoreArray,
 		activeSegment,
@@ -12,20 +22,12 @@
 		isSegmentFeature,
 		type SegmentFeature
 	} from '~/components/map4/watershedStore';
-	import { nanoid } from 'nanoid';
-	import { lineString, point as turfPoint } from '@turf/helpers';
-	import lineToPolygon from '@turf/line-to-polygon';
-	import lineSplit from '@turf/line-split';
-	import booleanWithin from '@turf/boolean-within';
-	import lineSliceAlong from '@turf/line-slice-along';
+	import { isCutting, lassoContinue, lassoEnabled } from '~/components/mapStore';
 
 	const { getMap } = getContext<MapContext>(key);
 	const map = getMap();
 
 	let lasso = L.lasso(map);
-
-	// TODO:
-	// something to do with MODE
 
 	map.on(FINISHED_EVENT, (ev: unknown) => {
 		const event = ev as LassoHandlerFinishedEvent;
@@ -100,36 +102,6 @@
 		featureStore.remove(latterSegmentId);
 
 		activeSegment.reset();
-	};
-
-	const createLineFeature = (id: string, coordinates: GeoJSON.Position[]) => {
-		return lineString(coordinates, {
-			id: `${id}:line`,
-			layerId: undefined,
-			kind: 'SegmentLine' as const,
-			weight: 5,
-			color: '#0000FF'
-		});
-	};
-
-	const createStartFeature = (id: string, coordinates: GeoJSON.Position[]) => {
-		return turfPoint(coordinates[0], {
-			id: `${id}:start`,
-			layerId: undefined,
-			kind: 'SegmentStart' as const,
-			icon: startIcon(),
-			zIndexOffset: 1000
-		});
-	};
-
-	const createEndFeature = (id: string, coordinates: GeoJSON.Position[]) => {
-		return turfPoint(coordinates[coordinates.length - 1], {
-			id: `${id}:end`,
-			layerId: undefined,
-			kind: 'SegmentEnd' as const,
-			icon: endIcon(),
-			zIndexOffset: 2000
-		});
 	};
 
 	const cutSegment = (event: LassoHandlerFinishedEvent) => {
