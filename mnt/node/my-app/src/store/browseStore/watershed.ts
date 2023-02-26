@@ -1,11 +1,14 @@
-import { writable, get, derived } from 'svelte/store';
+import { derived } from 'svelte/store';
 
-import { activeWatershedId } from '~/components/watershed-menu/store';
+import { createActiveWatershedId, createWatershedMapStore } from './generator';
 
-export const watershedStore = writable<any[]>([]);
+export const activeWatershedId = createActiveWatershedId();
 
-export const watershedStore2 = derived(watershedStore, ($watershedStore) => {
-	return $watershedStore.map((item) => {
+export const watershedMapStore = createWatershedMapStore();
+
+export const watershedStore = derived(watershedMapStore, ($watershedMapStore) => {
+	const array = [...$watershedMapStore.values()];
+	return array.map((item) => {
 		const segments = [];
 		const zones = [];
 		for (const child of item.children) {
@@ -26,8 +29,3 @@ export const activeWatershed = derived(
 		return $watershedStore.find((watershed) => watershed.id === $activeWatershedId);
 	}
 );
-
-export const offscreen = writable<boolean>(false);
-
-export const editSegment = writable<any>();
-export const editZone = writable<any>();

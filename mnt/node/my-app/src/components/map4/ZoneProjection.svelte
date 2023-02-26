@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { key, L, type MapContext } from '~/components/map4/leaflet';
-	import { asgstr, sgstr, isEditingZone, zonesBounds } from '~/components/mapStore';
 	import {
-		activeZone,
-		featureStoreArray,
 		activeFeatureStoreArray,
+		activeZone,
+		displayFeatureStoreArray,
 		isZoneFeature
-	} from './watershedStore';
+	} from '~/store/featureStore';
+	import { isEditingZone, zonesBounds } from '~/store/mapStore';
 
 	const { getMap } = getContext<MapContext>(key);
 	const { selectable } = getContext<MapContext>(key);
@@ -39,17 +39,13 @@
 				});
 
 				layer.on('click', (e) => {
-					const curveId: string = feature.properties.id.split(':')[0];
-					const segment = $sgstr.get(curveId);
+					const featureId: string = feature.properties.id;
 
 					if (e.originalEvent.shiftKey) {
-						asgstr.add(curveId, segment);
+						activeZone.add(featureId);
 					} else {
-						asgstr.set(curveId, segment);
+						activeZone.set(featureId);
 					}
-
-					// this.activeSegment = segment;
-					// this._mode = 'selecting';
 				});
 			}
 			if (layer instanceof L.Polygon) {
@@ -113,17 +109,13 @@
 				});
 
 				layer.on('click', (e) => {
-					const curveId: string = feature.properties.id.split(':')[0];
-					const segment = $sgstr.get(curveId);
+					const featureId = feature.properties.id;
 
 					if (e.originalEvent.shiftKey) {
-						asgstr.add(curveId, segment);
+						activeZone.add(featureId);
 					} else {
-						asgstr.set(curveId, segment);
+						activeZone.set(featureId);
 					}
-
-					// this.activeSegment = segment;
-					// this._mode = 'selecting';
 				});
 			}
 			if (layer instanceof L.Polygon) {
@@ -189,11 +181,11 @@
 	};
 	activeController.addTo(map);
 
-	$: if ($featureStoreArray) {
+	$: if ($displayFeatureStoreArray) {
 		controller.clearLayers();
-    $zonesBounds = undefined;
+		$zonesBounds = undefined;
 
-		for (const feature of $featureStoreArray) {
+		for (const feature of $displayFeatureStoreArray) {
 			if (isZoneFeature(feature)) {
 				controller.addData(feature.zone);
 			}

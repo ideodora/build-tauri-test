@@ -2,11 +2,7 @@
 	import { invoke } from '@tauri-apps/api';
 	import { save as dialogSave } from '@tauri-apps/api/dialog';
 	import tokml from 'tokml';
-	import {
-		activeFeatureStoreArray,
-		isSegmentFeature,
-		isZoneFeature
-	} from '~/components/map4/watershedStore';
+	import { activeFeatureStoreArray, isSegmentFeature, isZoneFeature } from '~/store/featureStore';
 
 	export const exportFeatures = async () => {
 		const path = await dialogSave({

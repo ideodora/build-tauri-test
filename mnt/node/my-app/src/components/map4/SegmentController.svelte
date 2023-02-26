@@ -10,7 +10,7 @@
 		featureStore,
 		isSegmentFeature,
 		type SegmentFeature
-	} from '~/components/map4/watershedStore';
+	} from '~/store/featureStore';
 	import { loadCurve as _loadCurve, loadCurveByKey as _loadCurveByKey } from './loadCurve';
 
 	const { getMap } = getContext<MapContext>(key);

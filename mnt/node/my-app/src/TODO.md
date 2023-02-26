@@ -1,5 +1,5 @@
 - [x] fix zone bounds
-- [-] tidy feature store
+- [x] tidy feature store
 - [x] sync center when leaving browse
 - [-] edit watershed attributes
 - [ ] duplicate watershed

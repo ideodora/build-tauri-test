@@ -1,19 +1,15 @@
 <script lang="ts">
-	import { save as dialogSave } from '@tauri-apps/api/dialog';
-	import { invoke } from '@tauri-apps/api/tauri';
 	import { default as turfBuffer } from '@turf/buffer';
 	import { default as turfSimplify } from '@turf/simplify';
-	import tokml from 'tokml';
 	import {
 		activeFeatureStoreArray,
 		featureStore,
 		isSegmentFeature,
 		isZoneFeature,
 		type ZoneFeature
-	} from '~/components/map4/watershedStore';
-	// import { type FeaturePropertySegmentZone } from '~/components/map4/leaflet';
-	import { asgstr, isComposingZone, sgstr } from '~/components/mapStore';
+	} from '~/store/featureStore';
 	import { nanoid } from 'nanoid';
+	import { isComposingZone } from '~/store/mapStore';
 
 	export const buildZone = (num: number = 100) => {
 		// tempController.clearLayers();

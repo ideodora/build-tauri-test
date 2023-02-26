@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { editZone, watershedStore } from '~/routes/(app)/browse/store';
 	import { invoke } from '@tauri-apps/api';
+	import { editZone, offscreen, watershedMapStore, watershedStore } from '~/store/browseStore';
 
 	let { id, watershed_id, name } = Object.assign({}, $editZone);
 
@@ -8,18 +8,16 @@
 		const payload = { id, name };
 		await invoke('update_watershed_item', { payload });
 
-		const watersheds = $watershedStore.map((watershed) => {
-			if (watershed.id !== watershed_id) return watershed;
-			const children = watershed.children.map((child: any) => {
-				if (child.id !== id) return child;
-				child.name = name;
-				return child;
-			});
-			watershed.children = children;
-			return watershed;
+		const watershed = $watershedMapStore.get(watershed_id);
+		const children = watershed.children.map((child: any) => {
+			if (child.id !== id) return child;
+			child.name = name;
+			return child;
 		});
-		$watershedStore = watersheds;
+		watershed.children = children;
+		watershedMapStore.set(watershed_id, watershed);
 
+		$offscreen = undefined;
 		$editZone = undefined;
 	};
 </script>

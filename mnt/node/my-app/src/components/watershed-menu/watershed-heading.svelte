@@ -1,21 +1,18 @@
 <script lang="ts">
-	import { activeWatershedId, store } from './store';
-	import Chevron_right from 'svelte-google-materialdesign-icons/Chevron_right.svelte';
-	import Expand_more from 'svelte-google-materialdesign-icons/Expand_more.svelte';
-	import Insert_drive_file from 'svelte-google-materialdesign-icons/Insert_drive_file.svelte';
-	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
-	import File_download from 'svelte-google-materialdesign-icons/File_download.svelte';
-	import Content_copy from 'svelte-google-materialdesign-icons/Content_copy.svelte';
-	import Clear from 'svelte-google-materialdesign-icons/Clear.svelte';
-	import { createEventDispatcher } from 'svelte';
-	import {
-		featureStoreArray,
-		isSegmentFeature,
-		isZoneFeature
-	} from '~/components/map4/watershedStore';
 	import { save as dialogSave } from '@tauri-apps/api/dialog';
 	import { invoke } from '@tauri-apps/api/tauri';
+	import { createEventDispatcher } from 'svelte';
+	import Chevron_right from 'svelte-google-materialdesign-icons/Chevron_right.svelte';
+	import Clear from 'svelte-google-materialdesign-icons/Clear.svelte';
+	import Content_copy from 'svelte-google-materialdesign-icons/Content_copy.svelte';
+	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
+	import Expand_more from 'svelte-google-materialdesign-icons/Expand_more.svelte';
+	import File_download from 'svelte-google-materialdesign-icons/File_download.svelte';
+	import Insert_drive_file from 'svelte-google-materialdesign-icons/Insert_drive_file.svelte';
 	import tokml from 'tokml';
+	import { displayFeatureStoreArray, isSegmentFeature, isZoneFeature } from '~/store/featureStore';
+	import { store } from '~/store/watershedMenuStore';
+	import { activeWatershedId } from '~/store/browseStore';
 
 	export let index: number;
 	export let watershed: {
@@ -50,7 +47,7 @@
 		if (path) {
 			const mapper = new Map<string, string>([]);
 
-			for (const feature of $featureStoreArray) {
+			for (const feature of $displayFeatureStoreArray) {
 				if (isSegmentFeature(feature)) {
 					const line = feature.line;
 					const lineKml = tokml(line);

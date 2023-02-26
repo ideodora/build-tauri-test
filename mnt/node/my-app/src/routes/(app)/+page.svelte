@@ -1,9 +1,9 @@
 <script lang="ts">
-	import MapContainer from '~/components/map4/MapContainer.svelte';
-	import ImportModal from '~/components/initial-import/ImportModal.svelte';
 	import { beforeNavigate, goto } from '$app/navigation';
 	import { confirm } from '@tauri-apps/api/dialog';
-	import { activeSegment, activeZone } from '~/components/map4/watershedStore';
+	import ImportModal from '~/components/initial-import/ImportModal.svelte';
+	import MapContainer from '~/components/map4/MapContainer.svelte';
+	import { activeSegment, activeZone } from '~/store/featureStore';
 
 	let left = false;
 

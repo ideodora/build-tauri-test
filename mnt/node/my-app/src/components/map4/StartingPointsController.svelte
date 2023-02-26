@@ -2,7 +2,7 @@
 	import { getContext, onDestroy } from 'svelte';
 	import { L, key, iconDefault, type MapContext } from '~/components/map4/leaflet';
 	import { invoke } from '@tauri-apps/api/tauri';
-	import { sps as startingPointRaws } from '~/components/mapStore';
+	import { rawStartingPoints } from '~/store/mapStore';
 	import { point as turfPoint } from '@turf/helpers';
 	import { createEventDispatcher } from 'svelte';
 
@@ -24,14 +24,14 @@
 
 		const startingPoints = await invoke<any>('search_points', { bounds: params });
 
-		startingPointRaws.set(startingPoints.points);
+		rawStartingPoints.set(startingPoints.points);
 	};
 
 	export const unload = async () => {
-		startingPointRaws.set([]);
+		rawStartingPoints.set([]);
 	};
 
-	const unsubscribe = startingPointRaws.subscribe(async (points) => {
+	const unsubscribe = rawStartingPoints.subscribe(async (points) => {
 		controller.clearLayers();
 
 		for (const point of points) {

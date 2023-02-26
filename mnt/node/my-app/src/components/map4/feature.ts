@@ -1,7 +1,7 @@
 import { lineString, point as turfPoint } from '@turf/helpers';
 import { nanoid } from 'nanoid';
 import { endIcon, L, startIcon } from '~/components/map4/leaflet';
-import type { SegmentFeature } from './watershedStore';
+import type { SegmentFeature } from '~/store/featureStore';
 
 export const createSegmentFromCurve = (curve: any) => {
 	const curveId = curve.curveId;

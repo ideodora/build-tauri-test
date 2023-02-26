@@ -2,8 +2,8 @@
 	import { getContext } from 'svelte';
 	import { createSegmentFromLayer } from '~/components/map4/feature';
 	import { key, L, type MapContext } from '~/components/map4/leaflet';
-	import { drawingEnabled } from '~/components/mapStore';
-	import { featureStore } from './watershedStore';
+	import { drawingEnabled } from '~/store/mapStore';
+	import { featureStore } from '~/store/featureStore';
 
 	const PM_OPTIONS = {
 		snappable: true,

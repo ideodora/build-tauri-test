@@ -3,13 +3,13 @@
 </script>
 
 <script lang="ts">
-	import { segmentVisibilityFilter } from '~/components/map4/watershedStore';
-	import Visibility from 'svelte-google-materialdesign-icons/Visibility.svelte';
-	import Visibility_off from 'svelte-google-materialdesign-icons/Visibility_off.svelte';
+	import { createEventDispatcher } from 'svelte';
 	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
 	import Insert_drive_file from 'svelte-google-materialdesign-icons/Insert_drive_file.svelte';
-	import { createEventDispatcher } from 'svelte';
-	import { editSegment } from '~/routes/(app)/browse/store';
+	import Visibility from 'svelte-google-materialdesign-icons/Visibility.svelte';
+	import Visibility_off from 'svelte-google-materialdesign-icons/Visibility_off.svelte';
+	import { segmentVisibilityFilter } from '~/store/featureStore';
+	import { editSegment, offscreen } from '~/store/browseStore';
 
 	const dispatcher = createEventDispatcher<{ toggleVisibility: { key: string } }>();
 
@@ -36,10 +36,11 @@
 	};
 
 	const onClickEdit = () => {
+		$offscreen = 'segment';
 		$editSegment = undefined;
 		setTimeout(() => {
 			$editSegment = data;
-		}, 200);
+		}, 100);
 	};
 </script>
 

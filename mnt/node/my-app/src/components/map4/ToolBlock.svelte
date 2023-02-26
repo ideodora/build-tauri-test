@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import Commit from 'svelte-google-materialdesign-icons/Commit.svelte';
 	import Content_cut from 'svelte-google-materialdesign-icons/Content_cut.svelte';
 	import Done from 'svelte-google-materialdesign-icons/Done.svelte';
@@ -12,33 +13,27 @@
 	import Select_all from 'svelte-google-materialdesign-icons/Select_all.svelte';
 	import Swap_vert from 'svelte-google-materialdesign-icons/Swap_vert.svelte';
 	import Timeline from 'svelte-google-materialdesign-icons/Timeline.svelte';
-	import { beforeUpdate, createEventDispatcher, onMount } from 'svelte';
 
 	import {
-		asgstr,
 		drawingEnabled,
 		isComposingZone,
+		isCutting,
 		isEditingZone,
-		isExporting,
 		lassoContinue,
 		lassoEnabled,
-		sps,
-		isCutting
-	} from '~/components/mapStore';
+		rawStartingPoints
+	} from '~/store/mapStore';
 
-	import {
-		activeFeature,
-		activeSegment,
-		activeZone,
-		featureStore
-	} from '~/components/map4/watershedStore';
+  import { isExporting } from '~/store/toolBlockStore';
+
+	import { activeFeature, activeSegment, activeZone, featureStore } from '~/store/featureStore';
 
 	const dispatch = createEventDispatcher();
 
 	let zoneExtendValue = 100;
 	let fileNameValue = '一時保存';
 
-	$: showSps = $sps.length > 0;
+	$: showSps = $rawStartingPoints.length > 0;
 
 	async function onPin() {
 		dispatch('clickedPin', {});
@@ -47,7 +42,6 @@
 	function offPin() {
 		dispatch('clickedOffPin', {});
 		return;
-		sps.set([]);
 	}
 
 	function offSelect() {

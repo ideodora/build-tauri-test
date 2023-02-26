@@ -1,6 +1,11 @@
 <script lang="ts">
-	import { activeWatershed, watershedStore } from '~/routes/(app)/browse/store';
 	import { invoke } from '@tauri-apps/api';
+	import {
+		activeWatershed,
+		offscreen,
+		watershedMapStore,
+		watershedStore
+	} from '~/store/browseStore';
 
 	let { id, name } = Object.assign({}, $activeWatershed);
 
@@ -8,12 +13,11 @@
 		const payload = { id, name };
 		await invoke('update_watershed', { payload });
 
-		const watersheds = $watershedStore.map((watershed) => {
-			if (watershed.id !== id) return watershed;
-			watershed.name = name;
-			return watershed;
-		});
-		$watershedStore = watersheds;
+		const watershed = $watershedMapStore.get(id);
+		watershed.name = name;
+		watershedMapStore.set(id, watershed);
+
+		$offscreen = undefined;
 	};
 </script>
 

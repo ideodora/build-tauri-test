@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store';
 
-function createStore() {
+export function createStore() {
 	const store = writable(new Map<string, boolean>([]));
 	const { subscribe, set, update } = store;
 
@@ -16,17 +16,3 @@ function createStore() {
 		getByKey: (...indexes: number[]) => get(store).get(indexes.join('-'))
 	};
 }
-
-export const store = createStore();
-
-function createActiveWatershedId() {
-	const { subscribe, set, update } = writable<number>(-1);
-
-	return {
-		subscribe,
-		reset: () => set(-1),
-		set,
-		update
-	};
-}
-export const activeWatershedId = createActiveWatershedId();

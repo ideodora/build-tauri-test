@@ -21,8 +21,8 @@
 		featureStore,
 		isSegmentFeature,
 		type SegmentFeature
-	} from '~/components/map4/watershedStore';
-	import { isCutting, lassoContinue, lassoEnabled } from '~/components/mapStore';
+	} from '~/store/featureStore';
+	import { isCutting, lassoContinue, lassoEnabled } from '~/store/mapStore';
 
 	const { getMap } = getContext<MapContext>(key);
 	const map = getMap();

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { store } from './store';
-	import { zoneVisibility, zoneVisibilityFilter } from '~/components/map4/watershedStore';
+	import Chevron_right from 'svelte-google-materialdesign-icons/Chevron_right.svelte';
+	import Expand_more from 'svelte-google-materialdesign-icons/Expand_more.svelte';
 	import Visibility from 'svelte-google-materialdesign-icons/Visibility.svelte';
 	import Visibility_off from 'svelte-google-materialdesign-icons/Visibility_off.svelte';
-	import Expand_more from 'svelte-google-materialdesign-icons/Expand_more.svelte';
-	import Chevron_right from 'svelte-google-materialdesign-icons/Chevron_right.svelte';
 	import ZoneItem, {
 		type ToggleVisibilityEvent
 	} from '~/components/watershed-menu/zone-item.svelte';
+	import { zoneVisibilityFilter } from '~/store/featureStore';
+	import { store } from '~/store/watershedMenuStore';
 
 	export let parentIndex: number;
 	export let index: number;
@@ -18,14 +18,16 @@
 		name: string;
 	}[] = [];
 
+	let visibleAll = true;
+
 	const toggleItemVisibility = (event: ToggleVisibilityEvent) => {
 		zoneVisibilityFilter.toggle(event.detail.key);
 	};
 
 	const toggleZone = () => {
-		$zoneVisibility = !$zoneVisibility;
+		visibleAll = !visibleAll;
 		for (const zone of zones) {
-			if ($zoneVisibility) {
+			if (visibleAll) {
 				zoneVisibilityFilter.remove(zone.key);
 			} else {
 				zoneVisibilityFilter.add(zone.key);
@@ -49,7 +51,7 @@
 					class="flex h-[18px] w-[18px] items-center justify-center"
 					on:click|preventDefault|stopPropagation={toggleZone}
 				>
-					{#if $zoneVisibility}
+					{#if visibleAll}
 						<Visibility class="text-gray-400" size="18" variation="filled" />
 					{:else}
 						<Visibility_off class="text-gray-400" size="18" />

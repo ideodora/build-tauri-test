@@ -2,7 +2,8 @@
 	import SegmentMenu from '~/components/watershed-menu/segment-menu.svelte';
 	import WatershedHeading from '~/components/watershed-menu/watershed-heading.svelte';
 	import ZoneMenu from '~/components/watershed-menu/zone-menu.svelte';
-	import { activeWatershedId, store } from './store';
+	import { store } from '~/store/watershedMenuStore';
+	import { activeWatershedId } from '~/store/browseStore';
 
 	export let index: number;
 	export let watershed: {

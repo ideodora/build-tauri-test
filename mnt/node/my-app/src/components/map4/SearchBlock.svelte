@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Search from 'svelte-google-materialdesign-icons/Search.svelte';
 	import { invoke } from '@tauri-apps/api/tauri';
-	import { fly } from 'svelte/transition';
-	import { segments as storeSegments } from '~/components/mapStore';
 	import { createEventDispatcher } from 'svelte';
+	import Search from 'svelte-google-materialdesign-icons/Search.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -24,8 +22,6 @@
 		candidates = ret.candidates;
 	};
 
-	// TODO: loadRiver;
-
 	const onLoadRiverKeydown = async (event: KeyboardEvent, candidate: any) => {
 		if (event.key === 'Enter') {
 			await loadRiver(candidate);
@@ -36,22 +32,6 @@
 		dispatch('clickedSearchRiver', { curveKey });
 		visible = false;
 		return;
-
-		// 	const { pid, prefCode } = event.detail.feature.properties;
-		// 	const curveId = { pid, pref_code: prefCode };
-		const result = await invoke<any>('get_curves', { curveKey });
-		console.log(result);
-		result.curves.forEach((curve: any) => {
-			const splits: string[] = curve.segments.split('\\\\r\\\\n');
-			const segments = splits.map((split) => {
-				const splitStrs = split.split(' ');
-				return [parseFloat(splitStrs[1]), parseFloat(splitStrs[0])];
-			});
-			const segment = { curveId: curve.id, segments };
-			const mapper = new Map($storeSegments.map((item) => [item.curveId, item]));
-			mapper.set(curve.id, segment);
-			storeSegments.set([...mapper.values()]);
-		});
 	};
 </script>
 

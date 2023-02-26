@@ -1,8 +1,13 @@
 <script lang="ts">
-	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
 	import Clear from 'svelte-google-materialdesign-icons/Clear.svelte';
-	import { editZone } from '~/routes/(app)/browse/store';
+	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
 	import Inset from '~/components/edit-zone-panel/inset.svelte';
+	import { editZone, offscreen } from '~/store/browseStore';
+
+	const onClickClear = () => {
+		$offscreen = undefined;
+		$editZone = undefined;
+	};
 </script>
 
 <div class="flex h-full flex-col">
@@ -16,11 +21,13 @@
 			<div class="text-xs leading-tight text-gray-500">編集</div>
 			<div class="text-base leading-none text-gray-800">区画属性</div>
 		</div>
-		<button on:click={() => ($editZone = undefined)}>
+		<button on:click={onClickClear}>
 			<Clear class="text-gray-600" tabindex="-1" />
 		</button>
 	</div>
 	<div class="flex-grow overflow-auto">
-		<Inset />
+		{#if $editZone}
+			<Inset />
+		{/if}
 	</div>
 </div>

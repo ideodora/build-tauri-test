@@ -19,8 +19,8 @@
 		featureStoreArray,
 		isSegmentFeature,
 		isZoneFeature
-	} from '~/components/map4/watershedStore';
-	import { syncCenter } from '~/components/mapStore';
+	} from '~/store/featureStore';
+	import { syncCenter } from '~/store/mapStore';
 
 	// let segmentsController: SegmentsController;
 
@@ -132,7 +132,7 @@
 		</div>
 	</div>
 	<div class="absolute inset-0 z-10">
-		<MapComponent autoFocus={false} on:mapKeydown={onMapKeydown} defaultCenter={$syncCenter} >
+		<MapComponent autoFocus={false} on:mapKeydown={onMapKeydown} defaultCenter={$syncCenter}>
 			<StartingPointsController
 				bind:this={startingPointsController}
 				on:clickedPoint={onClickedStartingPoint}

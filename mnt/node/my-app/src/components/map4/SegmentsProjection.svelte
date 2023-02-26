@@ -1,8 +1,13 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { endIcon, key, L, startIcon, type MapContext } from '~/components/map4/leaflet';
-	import { segmentsBounds } from '~/components/mapStore';
-	import { featureStoreArray, activeSegment, activeFeatureStoreArray, isSegmentFeature } from './watershedStore';
+	import { segmentsBounds } from '~/store/mapStore';
+	import {
+		displayFeatureStoreArray,
+		activeSegment,
+		activeFeatureStoreArray,
+		isSegmentFeature
+	} from '~/store/featureStore';
 
 	const { getMap } = getContext<MapContext>(key);
 	const { selectable } = getContext<MapContext>(key);
@@ -136,11 +141,11 @@
 	};
 	activeController.addTo(map);
 
-	$: if ($featureStoreArray) {
+	$: if ($displayFeatureStoreArray) {
 		controller.clearLayers();
-    $segmentsBounds = undefined;
+		$segmentsBounds = undefined;
 
-		for (const feature of $featureStoreArray) {
+		for (const feature of $displayFeatureStoreArray) {
 			if (isSegmentFeature(feature)) {
 				feature.start.properties.icon = startIcon();
 				feature.end.properties.icon = endIcon();

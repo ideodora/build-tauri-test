@@ -1,8 +1,13 @@
 <script lang="ts">
-	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
 	import Clear from 'svelte-google-materialdesign-icons/Clear.svelte';
-	import { editSegment } from '~/routes/(app)/browse/store';
+	import Edit from 'svelte-google-materialdesign-icons/Edit.svelte';
 	import Inset from '~/components/edit-segment-panel/inset.svelte';
+	import { editSegment, offscreen } from '~/store/browseStore';
+
+	const onClickClear = () => {
+		$offscreen = undefined;
+		$editSegment = undefined;
+	};
 </script>
 
 <div class="flex h-full flex-col">
@@ -16,11 +21,13 @@
 			<div class="text-xs leading-tight text-gray-500">編集</div>
 			<div class="text-base leading-none text-gray-800">流路属性</div>
 		</div>
-		<button on:click={() => ($editSegment = undefined)}>
+		<button on:click={onClickClear}>
 			<Clear class="text-gray-600" tabindex="-1" />
 		</button>
 	</div>
 	<div class="flex-grow overflow-auto">
-		<Inset />
+		{#if $editSegment}
+			<Inset />
+		{/if}
 	</div>
 </div>
