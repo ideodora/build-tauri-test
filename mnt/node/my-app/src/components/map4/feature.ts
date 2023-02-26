@@ -6,30 +6,24 @@ import type { SegmentFeature } from '~/store/featureStore';
 export const createSegmentFromCurve = (curve: any) => {
 	const curveId = curve.curveId;
 	const id = `${curveId}:segment`;
+	const coordinates = curve.segments;
 
-	const line = createLineFeature(id, curve.segments);
-	const start = createStartFeature(id, curve.segments);
-	const end = createEndFeature(id, curve.segments);
-
-	const segment = {
-		kind: 'SegmentFeature' as const,
-		id,
-		line,
-		start,
-		end
-	} satisfies SegmentFeature;
-
-	return segment;
+	return createSegment(id, coordinates);
 };
 
 export const createSegmentFromLayer = (polyLine: L.Polyline<GeoJSON.LineString>) => {
 	const feature = polyLine.toGeoJSON();
 	const random = nanoid();
 	const id = `${random}:segment`;
+	const coordinates = feature.geometry.coordinates;
 
-	const line = createLineFeature(id, feature.geometry.coordinates);
-	const start = createStartFeature(id, feature.geometry.coordinates);
-	const end = createEndFeature(id, feature.geometry.coordinates);
+	return createSegment(id, coordinates);
+};
+
+export const createSegment = (id: string, coordinates: GeoJSON.Position[]) => {
+	const line = createLineFeature(id, coordinates);
+	const start = createStartFeature(id, coordinates);
+	const end = createEndFeature(id, coordinates);
 
 	const segment = {
 		kind: 'SegmentFeature' as const,

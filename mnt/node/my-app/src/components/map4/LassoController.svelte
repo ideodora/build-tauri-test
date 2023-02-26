@@ -9,11 +9,7 @@
 	import { FINISHED_EVENT, type LassoHandlerFinishedEvent } from 'leaflet-lasso';
 	import { nanoid } from 'nanoid';
 	import { getContext } from 'svelte';
-	import {
-		createEndFeature,
-		createLineFeature,
-		createStartFeature
-	} from '~/components/map4/feature';
+	import { createSegment } from '~/components/map4/feature';
 	import { key, type MapContext } from '~/components/map4/leaflet';
 	import {
 		activeFeatureStoreArray,
@@ -85,19 +81,9 @@
 		const random = nanoid();
 		const id = `${random}:segment`;
 
-		const line = createLineFeature(id, merged);
-		const start = createStartFeature(id, merged);
-		const end = createEndFeature(id, merged);
-
-		const segment = {
-			kind: 'SegmentFeature' as const,
-			id,
-			line,
-			start,
-			end
-		} satisfies SegmentFeature;
-
+		const segment = createSegment(id, merged);
 		featureStore.add(id, segment);
+
 		featureStore.remove(formerSegmentId);
 		featureStore.remove(latterSegmentId);
 
@@ -133,18 +119,7 @@
 
 					const apartSegment = splitedPart.geometry.coordinates;
 
-					const line = createLineFeature(id, apartSegment);
-					const start = createStartFeature(id, apartSegment);
-					const end = createEndFeature(id, apartSegment);
-
-					const segment = {
-						kind: 'SegmentFeature' as const,
-						id,
-						line,
-						start,
-						end
-					} satisfies SegmentFeature;
-
+					const segment = createSegment(id, apartSegment);
 					featureStore.add(id, segment);
 				}
 			});

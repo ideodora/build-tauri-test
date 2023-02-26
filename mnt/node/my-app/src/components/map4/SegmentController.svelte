@@ -2,8 +2,8 @@
 	import { default as turfClone } from '@turf/clone';
 	import { nanoid } from 'nanoid';
 	import { getContext } from 'svelte';
-	import { createSegmentFromCurve } from '~/components/map4/feature';
-	import { endIcon, key, L, startIcon, type MapContext } from '~/components/map4/leaflet';
+	import { createSegment, createSegmentFromCurve } from '~/components/map4/feature';
+	import { key, L, type MapContext } from '~/components/map4/leaflet';
 	import {
 		activeFeatureStoreArray,
 		activeSegment,
@@ -48,38 +48,15 @@
 
 	const swapStartEnd = (feature: SegmentFeature) => {
 		const random = nanoid();
-		const segmentId = `${random}:segment`;
+		const id = `${random}:segment`;
 
 		const line = turfClone(feature.line);
 		const newCoords = line.geometry.coordinates.slice();
 		newCoords.reverse();
-		line.geometry.coordinates = newCoords;
-		line.properties.id = `${segmentId}:line`;
-		line.properties.layerId = undefined;
 
-		const start = turfClone(feature.end);
-		start.properties.id = `${segmentId}:start`;
-		start.properties.kind = 'SegmentStart';
-		start.properties.layerId = undefined;
-		start.properties.icon = startIcon();
+		const newFeature = createSegment(id, newCoords);
 
-		const end = turfClone(feature.start);
-		end.properties.id = `${segmentId}:end`;
-		end.properties.kind = 'SegmentEnd';
-		end.properties.layerId = undefined;
-		end.properties.icon = endIcon();
-
-		const newFeature = {
-			kind: 'SegmentFeature',
-			id: segmentId,
-			line,
-			start,
-			end
-		} satisfies SegmentFeature;
-
-		debugger;
-
-		featureStore.add(segmentId, newFeature);
+		featureStore.add(id, newFeature);
 		activeSegment.remove(feature.id);
 		featureStore.remove(feature.id);
 	};

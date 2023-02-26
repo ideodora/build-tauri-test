@@ -1,7 +1,4 @@
 <script lang="ts">
-	// import LassoControl from '~/components/map3/LassoControl.svelte';
-	// import MapComponent from '~/components/map3/MapComponent.svelte';
-	// import SegmentsController from '~/components/map3/SegmentsController.svelte';
 	import StartingPointsController from '~/components/map4/StartingPointsController.svelte';
 	import SearchBlock from '~/components/map4/SearchBlock.svelte';
 	import ToolBlock from '~/components/map4/ToolBlock.svelte';
@@ -16,13 +13,12 @@
 	import {
 		activeSegment,
 		activeZone,
+		featureStore,
 		featureStoreArray,
 		isSegmentFeature,
 		isZoneFeature
 	} from '~/store/featureStore';
-	import { syncCenter } from '~/store/mapStore';
-
-	// let segmentsController: SegmentsController;
+	import { isEditingZone, syncCenter } from '~/store/mapStore';
 
 	let zoneController: ZoneController;
 	let exportController: ExportController;
@@ -50,7 +46,7 @@
 	};
 
 	const onClickedRemoveSegment = () => {
-		// segmentsController.removeSelectingSegments();
+		removeAll();
 	};
 
 	const onClickedSwapStartEnd = () => {
@@ -70,7 +66,7 @@
 	};
 
 	const onClickedEditZone = () => {
-		// $isEditingZone = !$isEditingZone;
+    $isEditingZone = !$isEditingZone;
 	};
 
 	const onClickedExportSegments = () => {
@@ -92,6 +88,10 @@
 			event.preventDefault();
 			unselectAll();
 		}
+		if (event.key === 'Backspace') {
+			event.preventDefault();
+			removeAll();
+		}
 	};
 
 	const selectAll = () => {
@@ -106,6 +106,18 @@
 	};
 
 	const unselectAll = () => {
+		activeSegment.reset();
+		activeZone.reset();
+	};
+
+	const removeAll = () => {
+		for (const featureId of $activeSegment) {
+			featureStore.remove(featureId);
+		}
+		for (const featureId of $activeZone) {
+			featureStore.remove(featureId);
+			featureStore.remove('temp:zone');
+		}
 		activeSegment.reset();
 		activeZone.reset();
 	};

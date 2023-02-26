@@ -1,18 +1,19 @@
+- [-] edit watershed attributes
+- [ ] tidy tool buttons
+- [ ] reorder submenus
+- [ ] merge zone
+- [ ] add rectangle select
+- [ ] memo
+- [ ] duplicate watershed
+- [ ] import segment
+- [ ] import zone
+- [x] optimize way to create segment in feature.ts
 - [x] fix zone bounds
 - [x] tidy feature store
 - [x] sync center when leaving browse
-- [-] edit watershed attributes
-- [ ] duplicate watershed
+- [x] delete by backspacke key
 - [x] rename features in browse
-- [ ] reorder submenus
-- [ ] memo
 - [x] tidy LassoController, LineDrawer, SegmentController create segment
-- [ ] optimize way to create segment in feature.ts
-- [ ] add rectangle select
-- [ ] merge zone
-- [ ] tidy tool buttons
-- [ ] import segment
-- [ ] import zone
 - [x] add select/unselect all
 - [x] prevent selecting while browsing
 - [x] focus after river load

@@ -24,7 +24,7 @@
 		rawStartingPoints
 	} from '~/store/mapStore';
 
-  import { isExporting } from '~/store/toolBlockStore';
+	import { isExporting } from '~/store/toolBlockStore';
 
 	import { activeFeature, activeSegment, activeZone, featureStore } from '~/store/featureStore';
 
@@ -35,13 +35,12 @@
 
 	$: showSps = $rawStartingPoints.length > 0;
 
-	async function onPin() {
+	function onPin() {
 		dispatch('clickedPin', {});
 	}
 
 	function offPin() {
 		dispatch('clickedOffPin', {});
-		return;
 	}
 
 	function offSelect() {
@@ -56,7 +55,6 @@
 		}
 		zoneExtendValue = 100;
 		dispatch('createZoneEvent', {});
-		// zsgstr.set(100);
 	}
 
 	function extendZone() {
@@ -68,15 +66,6 @@
 	}
 
 	function removeSegment() {
-		for (const featureId of $activeSegment) {
-			featureStore.remove(featureId);
-		}
-		for (const featureId of $activeZone) {
-			featureStore.remove(featureId);
-			featureStore.remove('temp:zone');
-		}
-		activeSegment.reset();
-		activeZone.reset();
 		dispatch('clickedRemoveSegment', {});
 	}
 
@@ -85,7 +74,6 @@
 	}
 
 	function editZone() {
-		$isEditingZone = !$isEditingZone;
 		dispatch('clickedEditZone', {});
 	}
 
