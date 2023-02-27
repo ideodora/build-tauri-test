@@ -86,8 +86,8 @@
 
 	{#if $offscreen}
 		<div
-			class="absolute right-0 z-[1000] block h-full w-80 border-l border-gray-300 bg-gray-50"
-			transition:fly|local={{ x: 320, duration: 100 }}
+			class="absolute right-0 z-[1000] block h-full w-[21rem] border-l border-gray-300 bg-gray-50"
+			transition:fly|local={{ x: 336, duration: 100 }}
 		>
 			{#if $offscreen === 'watershed'}
 				<EditWatershedPanel />

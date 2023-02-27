@@ -403,10 +403,16 @@ pub async fn watersheds(pool: &SqlitePool) -> DbResult<Vec<DbResultWatershed>> {
         item.id AS item__id,
         item.`key` AS item__key,
         item.data AS item__data,
-        item.name AS item__name
+        item.name AS item__name,
+        pref.id as pref__id,
+        pref.short_name as pref__short_name,
+        pref.long_name as pref__long_name,
+        pref.furi_kana as pref__furi_kana
       FROM
         watersheds
         LEFT JOIN watershed_items AS item ON item.watershed_id = watersheds.id
+        LEFT JOIN prefectures_watersheds AS pw ON pw.watershed_id = watersheds.id
+        LEFT JOIN prefectures AS pref ON pref.id = pw.prefecture_id
       ;
     ";
 
@@ -436,9 +442,26 @@ pub async fn watersheds(pool: &SqlitePool) -> DbResult<Vec<DbResultWatershed>> {
         let item_key: &str = row.try_get("item__key").unwrap();
         let item_data: &str = row.try_get("item__data").unwrap();
         let item_name: Option<&str> = row.try_get("item__name").ok();
+
+        let pref_id: u32 = row.try_get("pref__id").unwrap();
+        let pref_short_name: &str = row.try_get("pref__short_name").unwrap();
+        let pref_long_name: &str = row.try_get("pref__long_name").unwrap();
+        let pref_furi_kana: &str = row.try_get("pref__furi_kana").unwrap();
+
         columns.insert(
             i,
-            DbResultWatershed::new(id, &name, item_id, &item_key, &item_data, item_name),
+            DbResultWatershed::new(
+                id,
+                &name,
+                item_id,
+                &item_key,
+                &item_data,
+                item_name,
+                pref_id,
+                &pref_short_name,
+                &pref_long_name,
+                &pref_furi_kana,
+            ),
         );
     }
 
@@ -494,6 +517,51 @@ pub async fn update_watershed(pool: &SqlitePool, payload: &UpdateWatershedReques
     match row {
         Ok(_row) => {
             println!("update success");
+        }
+        Err(e) => {
+            println!("{:#?}", e);
+            panic!("update error");
+        }
+    }
+
+    const SQL2: &str = "
+      -- SQLite
+      DELETE FROM prefectures_watersheds
+      WHERE
+        watershed_id = ?
+      ;
+    ";
+
+    let row = sqlx::query(SQL2).bind(&payload.id).execute(pool).await;
+
+    match row {
+        Ok(_row) => {
+            println!("delete prefs success");
+        }
+        Err(e) => {
+            println!("{:#?}", e);
+            panic!("update error");
+        }
+    }
+
+    if payload.pref_ids.len().eq(&0) {
+        return ();
+    }
+
+    let mut query_builder: QueryBuilder<Sqlite> =
+        QueryBuilder::new("INSERT INTO prefectures_watersheds (watershed_id, prefecture_id) ");
+
+    query_builder.push_values(payload.pref_ids.iter(), |mut b, source| {
+        b.push_bind(&payload.id).push_bind(source);
+    });
+
+    let query = query_builder.build();
+
+    let rows = query.execute(pool).await;
+
+    match rows {
+        Ok(_row) => {
+            println!("insert prefs success");
         }
         Err(e) => {
             println!("{:#?}", e);

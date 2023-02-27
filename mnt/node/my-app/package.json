@@ -53,6 +53,7 @@
 		"leaflet-lasso": "^2.2.12",
 		"leaflet.markercluster": "^1.5.3",
 		"nanoid": "^3.3.4",
+		"svelte-multiselect": "^8.3.0",
 		"tokml": "^0.4.0"
 	}
 }

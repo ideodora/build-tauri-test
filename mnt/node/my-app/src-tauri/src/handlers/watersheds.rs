@@ -20,6 +20,11 @@ pub struct DbResultWatershed {
     pub item_key: String,
     pub item_data: String,
     pub item_name: Option<String>,
+
+    pub pref_id: u32,
+    pub pref_short_name: String,
+    pub pref_long_name: String,
+    pub pref_furi_kana: String,
 }
 impl DbResultWatershed {
     pub fn new(
@@ -29,6 +34,10 @@ impl DbResultWatershed {
         item_key: &str,
         item_data: &str,
         item_name: Option<&str>,
+        pref_id: u32,
+        pref_short_name: &str,
+        pref_long_name: &str,
+        pref_furi_kana: &str,
     ) -> Self {
         DbResultWatershed {
             id,
@@ -37,6 +46,10 @@ impl DbResultWatershed {
             item_key: item_key.to_string(),
             item_data: item_data.to_string(),
             item_name: item_name.map(str::to_string),
+            pref_id,
+            pref_short_name: pref_short_name.to_string(),
+            pref_long_name: pref_long_name.to_string(),
+            pref_furi_kana: pref_furi_kana.to_string(),
         }
     }
 }
@@ -46,6 +59,7 @@ struct TheParent {
     pub id: u32,
     pub name: String,
     pub children: Vec<TheChild>,
+    pub prefectures: Vec<ThePref>,
 }
 impl TheParent {
     pub fn new(id: u32, name: &String) -> Self {
@@ -53,6 +67,7 @@ impl TheParent {
             id,
             name: name.clone(),
             children: vec![],
+            prefectures: vec![],
         }
     }
 }
@@ -82,6 +97,24 @@ impl TheChild {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct ThePref {
+    pub id: u32,
+    pub short_name: String,
+    pub long_name: String,
+    pub furi_kana: String,
+}
+impl ThePref {
+    pub fn new(id: u32, short_name: &String, long_name: &String, furi_kana: &String) -> Self {
+        ThePref {
+            id,
+            short_name: short_name.clone(),
+            long_name: long_name.clone(),
+            furi_kana: furi_kana.clone(),
+        }
+    }
+}
+
 #[tauri::command]
 pub(crate) async fn watersheds(
     _app_handle: tauri::AppHandle,
@@ -95,10 +128,41 @@ pub(crate) async fn watersheds(
         let parent = acc.entry(v.id).or_insert(TheParent::new(v.id, &v.name));
         let child = TheChild::new(v.item_id, v.id, &v.item_key, &v.item_data, &v.item_name);
         parent.children.push(child);
+        let pref = ThePref::new(
+            v.pref_id,
+            &v.pref_short_name,
+            &v.pref_long_name,
+            &v.pref_furi_kana,
+        );
+        parent.prefectures.push(pref);
         acc
     });
 
     Ok(WatershedResponse {
-        watersheds: folded.into_iter().map(|(_, v)| v).collect(),
+        watersheds: folded
+            .into_iter()
+            .map(|(_, mut v)| {
+                let mut columns = BTreeMap::new();
+                for child in v.children {
+                    if child.id == 0 {
+                        continue;
+                    }
+                    columns.insert(child.id, child);
+                }
+                let children: Vec<TheChild> = columns.into_iter().map(|(_, v)| v).collect();
+                v.children = children;
+
+                let mut columns = BTreeMap::new();
+                for pref in v.prefectures {
+                    if pref.id == 0 {
+                        continue;
+                    }
+                    columns.insert(pref.id, pref);
+                }
+                let prefs: Vec<ThePref> = columns.into_iter().map(|(_, v)| v).collect();
+                v.prefectures = prefs;
+                v
+            })
+            .collect(),
     })
 }

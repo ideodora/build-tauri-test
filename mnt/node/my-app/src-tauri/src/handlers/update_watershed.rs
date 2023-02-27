@@ -7,64 +7,8 @@ use tauri::{self, State};
 pub struct UpdateWatershedRequest {
     pub id: u32,
     pub name: String,
+    pub pref_ids: Vec<u32>,
 }
-
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct WatershedResponse {
-//     watersheds: Vec<TheParent>,
-// }
-
-// #[derive(Debug, Serialize, Deserialize)]
-// pub struct DbResultWatershed {
-//     pub id: u32,
-//     pub name: String,
-//     // let bounds: &str = row.try_get("bounds").unwrap();
-//     pub item_id: u32,
-//     pub item_key: String,
-//     pub item_data: String,
-// }
-// impl DbResultWatershed {
-//     pub fn new(id: u32, name: &str, item_id: u32, item_key: &str, item_data: &str) -> Self {
-//         DbResultWatershed {
-//             id,
-//             name: name.to_string(),
-//             item_id,
-//             item_key: item_key.to_string(),
-//             item_data: item_data.to_string(),
-//         }
-//     }
-// }
-
-// #[derive(Debug, Serialize, Deserialize)]
-// struct TheParent {
-//     pub id: u32,
-//     pub name: String,
-//     pub children: Vec<TheChild>,
-// }
-// impl TheParent {
-//     pub fn new(id: u32, name: &String) -> Self {
-//         TheParent {
-//             id,
-//             name: name.clone(),
-//             children: vec![],
-//         }
-//     }
-// }
-// #[derive(Debug, Serialize, Deserialize)]
-// struct TheChild {
-//     pub id: u32,
-//     pub key: String,
-//     pub data: String,
-// }
-// impl TheChild {
-//     pub fn new(id: u32, key: &String, data: &String) -> Self {
-//         TheChild {
-//             id,
-//             key: key.clone(),
-//             data: data.clone(),
-//         }
-//     }
-// }
 
 #[tauri::command]
 pub(crate) async fn update_watershed(
